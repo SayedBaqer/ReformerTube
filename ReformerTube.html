@@ -168,12 +168,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 /* ── PRINT ── */
 @media print{
   @page{size:A4 landscape;margin:5mm}
-  body{background:#fff;color:#000;height:auto;overflow:visible}
-  #topbar,#left-panel,#right-panel,#toast,#conn-modal{display:none!important}
-  #app{display:block!important;overflow:visible}
-  #centre{display:block!important;overflow:visible}
-  #grid-area{display:none!important}
-  #print-sheet{display:block!important;overflow:visible!important;padding:0}
+  body{background:#fff!important;color:#000;height:auto;overflow:visible}
+  #topbar,#left-panel,#right-panel,#toast,#conn-modal,
+  #stats-bar,#grid-area{display:none!important}
+  #app{display:block!important;overflow:visible;background:#fff!important}
+  #centre{display:block!important;overflow:visible;background:#fff!important}
+  #print-sheet{display:block!important;overflow:visible!important;padding:0;background:#fff!important}
+  * {-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 </style>
 </head>
@@ -726,8 +727,8 @@ function buildPrintSheet(){
     .ps-wrap        { font-family:Calibri,Arial,sans-serif; font-size:7pt; color:#000; width:100%; }
     .ps-wrap table  { border-collapse:collapse; }
     .ps-wrap td,
-    .ps-wrap th     { border:.6pt solid #666; text-align:center; vertical-align:middle;
-                      padding:0; height:16pt; font-size:7pt; overflow:hidden; white-space:nowrap; }
+    .ps-wrap th     { border:.6pt solid #555; text-align:center; vertical-align:middle;
+                      padding:1pt; height:18pt; font-size:8pt; overflow:hidden; white-space:nowrap; }
 
     /* ── main grid columns ── */
     .ps-main        { width:100%; table-layout:fixed; }
@@ -785,9 +786,9 @@ function buildPrintSheet(){
   // Right: end label vertical ~12pt + progress table
 
   h+=`<table class="ps-main" style="width:100%"><colgroup>
-    <col style="width:22pt"><col style="width:26pt">`;
-  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'9.5pt':'8pt'}">`;
-  h+=`<col style="width:14pt"><col style="width:60pt">`;
+    <col style="width:28pt"><col style="width:30pt">`;
+  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'12pt':'10pt'}">`;
+  h+=`<col style="width:16pt"><col style="width:70pt">`;
   h+=`</colgroup>`;
 
   // Row 1: CORSIBD END header (tubes 51-95 = 45 cols) | blank | Progress header
@@ -834,16 +835,16 @@ function buildPrintSheet(){
       h+=`<td class="${cc}" style="font-size:6pt;font-weight:bold">${lbl}</td>`;
     }
     // Progress column
-    h+=`<td style="font-size:6pt;text-align:center;background:#f2f2f2">
-      ${s.lifted||0}&nbsp;${s.replaced||0}&nbsp;${s.dogleg||0}&nbsp;${s.catfill||0}&nbsp;${s.bowed||0}
+    h+=`<td style="font-size:7pt;text-align:center;background:#f0f4ff;font-weight:bold;padding:1pt 2pt">
+      ${[s.lifted||0,s.replaced||0,s.dogleg||0,s.catfill||0,s.bowed||0].join(' ')}
     </td></tr>`;
   });
 
   // Total row
-  h+=`<tr><td class="ps-rowhdr" style="font-weight:bold">Total</td>`;
-  for(let t=95;t>=1;t--) h+=`<td></td>`;
-  h+=`<td style="font-size:6pt;font-weight:bold;text-align:center;background:#d6e4f7">
-    ${t.lifted}&nbsp;${t.replaced}&nbsp;${t.dogleg}&nbsp;${t.catfill}&nbsp;${t.bowed}
+  h+=`<tr><td class="ps-rowhdr" style="font-weight:bold;background:#d9d9d9">Total</td>`;
+  for(let t2=95;t2>=1;t2--) h+=`<td style="background:#f9f9f9"></td>`;
+  h+=`<td style="font-size:7pt;font-weight:bold;text-align:center;background:#d6e4f7;padding:1pt 2pt">
+    ${t.lifted} ${t.replaced} ${t.dogleg} ${t.catfill} ${t.bowed}
   </td></tr>`;
 
   // PG COMPRESSOR END label row
@@ -944,12 +945,7 @@ function buildPrintSheet(){
     h+=`</table>`;
   }
 
-  // Shift notes
-  if(notes){
-    h+=`<div style="margin-top:4pt;font-size:7pt;border:.5pt solid #999;padding:3pt 5pt">
-      <b>Shift Notes:</b> ${notes.replace(/\n/g,'<br>')}
-    </div>`;
-  }
+  // Notes removed from print as requested
 
   h+=`</div>`; // ps-wrap
 
