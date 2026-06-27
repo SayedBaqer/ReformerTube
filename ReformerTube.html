@@ -5,42 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HRB Tube Tracker</title>
 <style>
-:root{--lifted:#f472b6;--replaced:#60a5fa;--dogleg:#fb923c;--catfill:#c084fc;--bowed:#4ade80;--dt:#fbbf24;--bg:#0d1520;--surface:#162032;--card:#1c2a40;--border:#253650;--text:#e2e8f0;--muted:#64748b;--accent:#3b82f6;--sb:#3ecf8e}
+:root{
+  --lifted:#f472b6;--replaced:#60a5fa;--dogleg:#fb923c;
+  --catfill:#c084fc;--bowed:#4ade80;--dt:#fbbf24;
+  --bg:#0d1520;--surface:#162032;--card:#1c2a40;
+  --border:#253650;--text:#e2e8f0;--muted:#64748b;
+  --accent:#3b82f6;--sb:#3ecf8e;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-/* TOPBAR */
-#topbar{background:#0a1020;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;z-index:50}
-#topbar h1{font-size:14px;font-weight:700;color:#fff;flex:1;min-width:160px}
-#sync-badge{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--card);border:1px solid var(--border)}
-.top-btn{padding:5px 12px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;white-space:nowrap}
+/* ── TOPBAR ── */
+#topbar{background:#0a1020;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;z-index:50}
+#topbar h1{font-size:13px;font-weight:700;color:#fff;flex:1;min-width:140px}
+#sync-badge{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer}
+.top-btn{padding:5px 11px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;white-space:nowrap}
 .top-btn:hover{background:#263650}
 .top-btn.danger{border-color:#ef4444;color:#ef4444}
 .top-btn.end{background:#14532d;border-color:#4ade80;color:#4ade80;font-weight:700}
-.top-btn.print-btn{background:#1e3a8a;border-color:#60a5fa;color:#60a5fa}
-.top-btn.sb{background:#0e2a1e;border-color:var(--sb);color:var(--sb)}
-#shift-name-input{background:var(--card);border:1px solid var(--border);color:#fbbf24;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:700;width:110px}
+.top-btn.prt{background:#1e3a8a;border-color:#60a5fa;color:#60a5fa}
+.top-btn.conn{background:#0e2a1e;border-color:var(--sb);color:var(--sb)}
+#shift-name-input{background:var(--card);border:1px solid var(--border);color:#fbbf24;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:700;width:100px}
 
-/* APP */
-#app{display:flex;flex:1;overflow:hidden}
+/* ── APP: 3-column layout ── */
+#app{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* LEFT */
-#left-panel{width:230px;min-width:200px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+/* ── LEFT PANEL ── */
+#left-panel{width:220px;min-width:200px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 .panel-section{padding:10px;border-bottom:1px solid var(--border)}
 .panel-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 #row-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .row-btn{padding:10px 0;text-align:center;border-radius:5px;border:2px solid var(--border);background:var(--card);color:var(--text);font-size:18px;font-weight:700;cursor:pointer;transition:all .15s}
 .row-btn:hover{border-color:var(--accent);background:#1a2d4a}
 .row-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
-#tube-search{width:100%;margin-bottom:6px;padding:6px 8px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:12px}
-#tube-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-height:215px;overflow-y:auto}
-.tube-btn{padding:5px 0;text-align:center;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;cursor:pointer;transition:all .12s;position:relative}
+#tube-search{width:100%;margin-bottom:6px;padding:5px 8px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:12px}
+#tube-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-height:200px;overflow-y:auto}
+.tube-btn{padding:4px 0;text-align:center;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;cursor:pointer;position:relative;transition:all .1s}
 .tube-btn:hover{border-color:var(--accent);color:var(--text)}
 .tube-btn.active{border-color:var(--accent);background:#1e3a8a;color:#fff;font-weight:700}
 .sdot{position:absolute;top:2px;right:2px;width:5px;height:5px;border-radius:50%}
-#status-btns{display:flex;flex-direction:column;gap:5px}
-.status-btn{padding:9px 10px;border-radius:5px;border:2px solid transparent;background:var(--card);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .12s;text-align:left}
-.status-btn .code{font-size:9px;font-weight:800;width:28px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#000;flex-shrink:0}
+#status-btns{display:flex;flex-direction:column;gap:4px}
+.status-btn{padding:8px 10px;border-radius:5px;border:2px solid transparent;background:var(--card);color:var(--text);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .1s}
+.status-btn .code{font-size:9px;font-weight:800;width:26px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#000;flex-shrink:0}
 .status-btn:hover{filter:brightness(1.15)}
 .status-btn.active{border-color:currentColor}
 .s-lifted{color:var(--lifted)}.s-lifted.active{background:#3d1a2e}
@@ -50,17 +56,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .s-bowed{color:var(--bowed)}.s-bowed.active{background:#0f3020}
 .s-dt{color:var(--dt)}.s-dt.active{background:#3d2800}
 .s-clear{color:var(--muted)}.s-clear.active{background:#2a2a2a;border-color:var(--muted)}
-#apply-btn{margin:10px;padding:12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+#apply-btn{margin:10px;padding:11px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer}
 #apply-btn:hover{background:#2563eb}
 #apply-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
 
-/* GRID */
-#grid-area{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
-.section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:4px 2px 2px}
+/* ── CENTRE: stacked grid + print sheet ── */
+#centre{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#grid-area{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:4px;min-height:0}
+.section-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:2px}
 .grid-table{border-collapse:collapse;table-layout:fixed}
-.grid-table th,.grid-table td{width:26px;height:26px;text-align:center;vertical-align:middle;border:1px solid var(--border);padding:0;font-size:9px}
+.grid-table th,.grid-table td{width:26px;height:25px;text-align:center;vertical-align:middle;border:1px solid var(--border);padding:0;font-size:9px}
 .rh{width:20px;background:#0a1020;color:var(--muted);font-weight:700;font-size:10px;cursor:default}
-.ch{background:#0a1020;color:var(--muted);font-size:8px;cursor:default;height:16px}
+.ch{background:#0a1020;color:var(--muted);font-size:7px;cursor:default;height:14px}
 .ch.g5{color:#93c5fd;border-left:2px solid #2a3a60}
 .tube-cell{background:var(--card);cursor:pointer;transition:filter .1s}
 .tube-cell:hover{filter:brightness(1.3)}
@@ -75,8 +82,47 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .tube-cell.bowed{background:var(--bowed);color:#14532d;font-weight:800}
 .tube-cell.dt{background:var(--dt);color:#451a03;font-weight:800}
 
-/* RIGHT */
-#right-panel{width:200px;min-width:180px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+/* ── PRINT SHEET (below grid on screen, full page on print) ── */
+#print-sheet{
+  background:#fff;color:#000;
+  padding:8px 10px;
+  border-top:2px solid var(--border);
+  overflow:auto;
+  flex-shrink:0;
+  max-height:40vh;
+  font-family:'Segoe UI',Arial,sans-serif;
+  font-size:7pt;
+  display:none; /* hidden until Print clicked */
+}
+#print-sheet.visible{display:block}
+#print-sheet .ps-title{text-align:center;font-size:9pt;font-weight:bold;margin-bottom:2mm}
+#print-sheet .ps-sub{display:flex;justify-content:space-between;font-size:6pt;color:#555;margin-bottom:2mm}
+#print-sheet table.ps-grid{border-collapse:collapse;width:100%;table-layout:fixed}
+#print-sheet table.ps-grid th,
+#print-sheet table.ps-grid td{border:.4pt solid #aaa;text-align:center;vertical-align:middle;padding:0;font-size:6pt;height:11pt;overflow:hidden}
+.ps-corner{background:#e8e8e8;font-weight:bold;font-size:6pt;width:18pt}
+.ps-rowlabel{background:#e8e8e8;font-weight:bold;font-size:7pt;width:18pt}
+.ps-bay{background:#d0e4f7;font-weight:bold;font-size:6pt}
+.ps-tubenum{background:#f0f0f0;font-size:5pt;color:#444}
+.ps-tubenum.g5{background:#ddeeff;font-weight:bold}
+.ps-endlabel{background:#c8e6c9;font-weight:bold;font-size:5pt;width:12pt;writing-mode:vertical-rl;white-space:nowrap}
+#print-sheet td.lifted,#print-sheet .lifted{background:#f9a8d4!important;color:#5b1a3a;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-sheet td.replaced,#print-sheet .replaced{background:#93c5fd!important;color:#1e3a6e;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-sheet td.dogleg,#print-sheet .dogleg{background:#fdba74!important;color:#5c2200;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-sheet td.catfill,#print-sheet .catfill{background:#d8b4fe!important;color:#3b0764;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-sheet td.bowed,#print-sheet .bowed{background:#86efac!important;color:#14532d;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-sheet td.dt,#print-sheet .dt{background:#fde68a!important;color:#451a03;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ps-legend{margin-top:2mm;display:flex;gap:5mm;flex-wrap:wrap;font-size:6pt;align-items:center}
+.ps-leg{display:flex;align-items:center;gap:1.5mm}
+.ps-dot{width:8pt;height:8pt;border:.4pt solid #999;display:inline-block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ps-stats{margin-top:2mm;display:flex;gap:5mm;flex-wrap:wrap}
+.ps-stats table{border-collapse:collapse;font-size:6pt}
+.ps-stats th{background:#e8e8e8;border:.4pt solid #aaa;padding:1pt 3pt;font-size:6pt}
+.ps-stats td{border:.4pt solid #aaa;padding:1pt 3pt;text-align:right}
+.ps-stats td:first-child{text-align:left;font-weight:bold}
+
+/* ── RIGHT PANEL ── */
+#right-panel{width:195px;min-width:175px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .stat-box{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px}
 .stat-box h3{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .stat-tbl{width:100%;border-collapse:collapse;font-size:10px}
@@ -89,66 +135,63 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .sname{font-weight:700;color:#fbbf24;margin-bottom:3px}
 .sch{display:inline-block;padding:1px 4px;border-radius:3px;background:var(--surface);margin:1px;font-size:9px}
 
-/* TOAST */
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;width:420px;max-width:96vw;max-height:90vh;overflow-y:auto}
+.modal-box h2{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--sb);margin-bottom:14px}
+.step-block{background:var(--bg);border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--muted);line-height:1.9}
+.step-block b{color:var(--text)}
+.step-block a{color:var(--sb);text-decoration:none}
+.step-block code{background:#1a2a40;padding:1px 5px;border-radius:3px;font-size:10px;color:#a5f3fc;font-family:monospace}
+.field-grp{margin-bottom:10px}
+.field-grp label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.field-grp input{width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;font-family:monospace}
+.field-grp input:focus{outline:1px solid var(--sb);border-color:var(--sb)}
+.sql-block{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:10px;color:#a5f3fc;font-family:monospace;line-height:1.6;white-space:pre;overflow-x:auto;margin:6px 0}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.btn-sb{padding:8px 18px;border-radius:5px;border:none;background:var(--sb);color:#000;font-weight:700;font-size:12px;cursor:pointer}
+.btn-sb:hover{opacity:.9}
+.conn-status{font-size:11px;padding:6px 10px;border-radius:5px;margin-top:8px;display:none}
+.conn-status.ok{background:#0f3020;color:#4ade80;border:1px solid #4ade80;display:block}
+.conn-status.err{background:#1a0808;color:#f87171;border:1px solid #f87171;display:block}
+
+/* ── TOAST ── */
 #toast{position:fixed;bottom:16px;right:16px;padding:9px 16px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;background:#1d4ed8;color:#fff}
 #toast.show{opacity:1}
 #toast.err{background:#7f1d1d}
 
-/* SETUP MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;width:400px;max-width:95vw}
-.modal-box h2{font-size:15px;margin-bottom:4px;color:#fff}
-.modal-box .subtitle{font-size:11px;color:var(--sb);margin-bottom:14px}
-.field-group{margin-bottom:12px}
-.field-group label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.field-group input{width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;font-family:monospace}
-.field-group input:focus{outline:1px solid var(--sb);border-color:var(--sb)}
-.modal-steps{background:var(--bg);border-radius:6px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--muted);line-height:1.8}
-.modal-steps b{color:var(--text)}
-.modal-steps a{color:var(--sb)}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end}
-.btn-sb{padding:7px 16px;border-radius:5px;border:none;background:var(--sb);color:#000;font-weight:700;font-size:12px;cursor:pointer}
-.btn-sb:hover{opacity:.9}
-
-/* PRINT */
+/* ── PRINT ── */
 @media print{
-  body{background:#fff;color:#000;height:auto;overflow:auto}
-  #topbar,#left-panel,#right-panel{display:none!important}
+  @page{size:A4 landscape;margin:5mm}
+  body{background:#fff;color:#000;height:auto;overflow:visible}
+  #topbar,#left-panel,#right-panel,#toast,#conn-modal{display:none!important}
   #app{display:block;overflow:visible}
-  #grid-area{overflow:visible;padding:4px}
-  .section-label{color:#000;font-size:8pt}
-  .grid-table th,.grid-table td{width:16px;height:15px;font-size:6pt;border-color:#aaa}
-  .ch{height:12px}
-  .rh,.ch{background:#eee!important;color:#000}
-  .tube-cell.lifted{background:#f9a8d4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tube-cell.replaced{background:#93c5fd!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tube-cell.dogleg{background:#fdba74!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tube-cell.catfill{background:#d8b4fe!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tube-cell.bowed{background:#86efac!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tube-cell.dt{background:#fde68a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #print-footer{display:block!important;font-size:8pt;padding:8px}
+  #centre{display:block;overflow:visible}
+  #grid-area{display:none!important}
+  #print-sheet{display:block!important;max-height:none!important;overflow:visible!important;border-top:none;padding:0}
 }
-#print-footer{display:none}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>🔧 HRB Tube Maintenance Tracker</h1>
-  <span id="sync-badge">⚪ Not connected</span>
+  <span id="sync-badge" onclick="openConn()" title="Click to configure database">⏳ Connecting…</span>
   <input id="shift-name-input" value="Shift 1" placeholder="Shift name" oninput="save()">
   <button class="top-btn end" onclick="endShift()">⏱ End Shift</button>
-  <button class="top-btn print-btn" onclick="window.print()">🖨 Print</button>
-  <button class="top-btn sb" onclick="openSetup()">🗄 DB SQL</button>
+  <button class="top-btn prt" onclick="doPrint()">🖨 Print</button>
+  <button class="top-btn conn" onclick="openConn()">🗄 DB Connect</button>
   <button class="top-btn danger" onclick="resetAll()">🗑 Reset</button>
 </div>
 
 <div id="app">
+
   <!-- LEFT: 3-step selector -->
   <div id="left-panel">
     <div class="panel-section">
-      <div class="panel-label">① Select Row</div>
+      <div class="panel-label">① Row</div>
       <div id="row-btns">
         <button class="row-btn" data-row="A" onclick="selectRow('A')">A</button>
         <button class="row-btn" data-row="B" onclick="selectRow('B')">B</button>
@@ -159,12 +202,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       </div>
     </div>
     <div class="panel-section">
-      <div class="panel-label">② Select Tube #</div>
+      <div class="panel-label">② Tube #</div>
       <input id="tube-search" placeholder="Search 1–95…" oninput="filterTubes(this.value)" type="number" min="1" max="95">
       <div id="tube-grid"></div>
     </div>
     <div class="panel-section">
-      <div class="panel-label">③ Select Status</div>
+      <div class="panel-label">③ Status</div>
       <div id="status-btns">
         <button class="status-btn s-lifted"  data-s="lifted"   onclick="selectStatus('lifted')"><span class="code" style="background:var(--lifted)">I</span>Lifted</button>
         <button class="status-btn s-replaced" data-s="replaced" onclick="selectStatus('replaced')"><span class="code" style="background:var(--replaced)">R</span>Replaced</button>
@@ -175,13 +218,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
         <button class="status-btn s-clear"   data-s="clear"    onclick="selectStatus('clear')"><span class="code" style="background:#374151;color:#9ca3af">✕</span>Clear</button>
       </div>
     </div>
-    <button id="apply-btn" onclick="applySelection()" disabled>Select row &amp; tube first</button>
+    <button id="apply-btn" onclick="applySelection()" disabled>Select row + tube first</button>
   </div>
 
-  <!-- GRID -->
-  <div id="grid-area"></div>
+  <!-- CENTRE: grid on top, print sheet below -->
+  <div id="centre">
+    <div id="grid-area"></div>
+    <div id="print-sheet"></div>
+  </div>
 
-  <!-- RIGHT: Stats -->
+  <!-- RIGHT: stats -->
   <div id="right-panel">
     <div class="stat-box">
       <h3>📊 This Shift</h3>
@@ -204,271 +250,193 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   </div>
 </div>
 
-<!-- Print footer -->
-<div id="print-footer">
-  <strong>Shift: <span id="pf-shift"></span> &nbsp;|&nbsp; Printed: <span id="pf-date"></span></strong>
-  <div id="pf-table"></div>
-</div>
-
-<div id="toast"></div>
-
-<!-- Supabase Setup Modal -->
-<div class="modal-bg" id="setup-modal">
+<!-- DB Connect Modal -->
+<div class="modal-bg" id="conn-modal">
   <div class="modal-box">
-    <h2>🗄 Supabase DB — One-Time SQL Setup</h2>
-    <div class="subtitle">Run this SQL once in your Supabase project to enable sync</div>
+    <h2>🗄 Database Connection — Supabase</h2>
+    <div class="modal-sub">Real-time sync across all users · Free tier · No server needed</div>
 
-    <div class="modal-steps">
-      <b>Project:</b> mgxcrrgnfoqkjcymgdny.supabase.co<br><br>
-      1. Go to <b>supabase.com</b> → your project → <b>SQL Editor</b><br>
-      2. Paste the SQL below and click <b>Run</b><br>
-      3. Done — all users can now sync live with no further config
+    <div class="step-block">
+      <b>Step 1 — Create free Supabase project</b><br>
+      Go to <a href="https://supabase.com" target="_blank">supabase.com</a> → Sign in with Google → <b>New project</b><br>
+      Give it a name, choose a region close to you, set a DB password → <b>Create project</b> (takes ~1 min)
     </div>
 
-    <pre id="setup-sql" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px;font-size:10px;color:#a5f3fc;overflow-x:auto;margin-bottom:10px;line-height:1.7">
--- Run once in Supabase SQL Editor:
-
-create table if not exists hrb_state (
+    <div class="step-block">
+      <b>Step 2 — Run this SQL once</b><br>
+      In your project → <b>SQL Editor</b> (left sidebar <code>&gt;_</code> icon) → paste &amp; Run:
+      <div class="sql-block">create table if not exists hrb_state (
   id text primary key,
   data jsonb not null,
   updated_at timestamptz default now()
 );
-
-alter publication supabase_realtime add table hrb_state;
-
+alter table hrb_state disable row level security;
 insert into hrb_state (id, data)
 values ('main', '{"grid":{},"history":[],"shiftName":"Shift 1"}')
-on conflict (id) do nothing;
-    </pre>
+on conflict (id) do nothing;</div>
+      <button class="top-btn" style="font-size:10px" onclick="copySQL()">📋 Copy SQL</button>
+    </div>
+
+    <div class="step-block">
+      <b>Step 3 — Get your API credentials</b><br>
+      In your project → <b>Project Settings</b> (gear ⚙️ icon) → <b>API</b><br>
+      Copy: <b>Project URL</b> and <b>anon public</b> key (starts with <code>eyJ…</code>)
+    </div>
+
+    <div class="field-grp">
+      <label>Project URL</label>
+      <input id="inp-url" placeholder="https://xxxxxxxxxxxx.supabase.co" autocomplete="off">
+    </div>
+    <div class="field-grp">
+      <label>Anon Public Key (eyJ…)</label>
+      <input id="inp-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" autocomplete="off">
+    </div>
+
+    <div id="conn-status" class="conn-status"></div>
 
     <div class="modal-footer">
-      <button class="top-btn" style="font-size:11px" onclick="copySQL()">📋 Copy SQL</button>
-      <button class="top-btn" onclick="closeSetup()">Close</button>
+      <button class="top-btn" onclick="closeConn()">Cancel</button>
+      <button class="top-btn" onclick="testConn()" style="border-color:var(--sb);color:var(--sb)">🔍 Test</button>
+      <button class="btn-sb" onclick="saveConn()">💾 Save &amp; Connect</button>
     </div>
   </div>
 </div>
 
+<div id="toast"></div>
+
 <script>
-// ─────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────
+// ── CONSTANTS ──
 const ROWS=['A','B','C','D','E','F'];
 const STATES=['lifted','replaced','dogleg','catfill','bowed','dt'];
 const CODES={lifted:'I',replaced:'R',dogleg:'DI',catfill:'CF',bowed:'RD',dt:'D&T',clear:''};
 const CLRS={lifted:'var(--lifted)',replaced:'var(--replaced)',dogleg:'var(--dogleg)',catfill:'var(--catfill)',bowed:'var(--bowed)',dt:'var(--dt)'};
 
-// ─────────────────────────────────────────────
-// APP STATE
-// ─────────────────────────────────────────────
-let grid={}, history=[], selRow=null, selTube=null, selStatus=null;
-let sbClient=null, sbChannel=null;
-let suppressRemote=false;
+// ── INITIAL DATA FROM EXCEL ──
+const INITIAL_GRID={"F-84":"lifted","F-75":"dogleg","F-74":"dogleg","F-73":"dogleg","F-72":"dogleg","F-71":"dogleg","F-70":"replaced","F-69":"replaced","F-68":"replaced","F-67":"replaced","F-66":"replaced","F-65":"lifted","F-62":"catfill","F-61":"lifted","F-59":"lifted","F-58":"lifted","F-57":"lifted","F-50":"bowed","F-49":"catfill","F-48":"catfill","F-44":"catfill","F-41":"catfill","F-38":"catfill","F-37":"catfill","F-36":"catfill","F-33":"catfill","F-32":"catfill","F-31":"catfill","F-30":"lifted","F-26":"catfill","F-25":"catfill","F-24":"catfill","F-22":"lifted","F-21":"catfill","F-20":"catfill","F-19":"lifted","F-18":"lifted","F-17":"lifted","F-16":"lifted","F-15":"catfill","F-14":"replaced","F-13":"catfill","F-12":"dogleg","F-11":"catfill","F-10":"catfill","F-9":"catfill","F-8":"dogleg","F-7":"dogleg","F-6":"dogleg","F-5":"dogleg","F-4":"dogleg","F-3":"dogleg","F-2":"dogleg","F-1":"dogleg","E-95":"lifted","E-94":"lifted","E-93":"lifted","E-92":"lifted","E-91":"lifted","E-90":"lifted","E-89":"lifted","E-88":"lifted","E-87":"lifted","E-86":"lifted","E-85":"lifted","E-84":"lifted","E-83":"lifted","E-81":"lifted","E-80":"lifted","E-79":"lifted","E-77":"lifted","E-55":"lifted","E-54":"lifted","E-53":"lifted","E-49":"catfill","E-42":"catfill","E-35":"catfill","E-34":"catfill","E-33":"catfill","E-29":"replaced","E-27":"dogleg","E-26":"catfill","E-25":"catfill","E-24":"catfill","E-23":"catfill","E-22":"catfill","E-21":"catfill","E-20":"catfill","E-19":"catfill","E-18":"catfill","E-16":"replaced","E-15":"replaced","E-14":"catfill","E-13":"replaced","E-12":"replaced","E-11":"replaced","E-10":"catfill","E-9":"lifted","E-8":"catfill","E-7":"replaced","E-6":"replaced","E-5":"catfill","E-4":"catfill","E-3":"catfill","E-2":"lifted","E-1":"lifted","D-49":"catfill","D-48":"catfill","D-41":"catfill","D-37":"catfill","D-35":"catfill","D-33":"catfill","D-31":"catfill","D-25":"dogleg","D-24":"catfill","D-23":"catfill","D-21":"catfill","D-20":"catfill","D-19":"catfill","D-18":"catfill","D-16":"catfill","D-14":"catfill","D-12":"catfill","D-9":"dogleg","D-7":"catfill","D-6":"catfill","C-51":"catfill","C-50":"catfill","C-42":"catfill","C-41":"catfill","C-35":"catfill","C-34":"catfill","C-33":"catfill","C-31":"catfill","C-22":"catfill","C-21":"catfill","C-20":"catfill","C-18":"catfill","C-17":"catfill","C-14":"catfill","C-13":"catfill","C-10":"catfill","C-8":"catfill","C-6":"catfill","B-89":"catfill","B-43":"catfill","B-35":"catfill","B-25":"catfill","B-22":"catfill","B-20":"catfill","B-19":"catfill","B-17":"catfill","B-10":"catfill","B-9":"catfill","B-5":"catfill","A-83":"catfill","A-81":"lifted","A-80":"lifted","A-79":"lifted","A-78":"lifted","A-77":"catfill","A-68":"lifted","A-67":"lifted","A-66":"lifted","A-65":"replaced","A-64":"replaced","A-63":"replaced","A-62":"replaced","A-61":"replaced","A-59":"lifted","A-42":"catfill","A-40":"lifted","A-39":"catfill","A-37":"catfill","A-35":"catfill","A-32":"lifted","A-31":"lifted","A-27":"catfill","A-25":"catfill","A-21":"catfill","A-20":"catfill","A-19":"catfill","A-18":"catfill","A-15":"catfill","A-14":"catfill","A-10":"catfill","A-9":"catfill","A-8":"catfill","A-5":"catfill"};
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
+// ── APP STATE ──
+let grid={},history=[],selRow=null,selTube=null,selStatus=null;
+let suppressRemote=false,pollTimer=null,lastTs=null;
+let SB_URL='',SB_KEY='';
+
+// ── INIT ──
 async function init(){
+  // Load credentials from localStorage
+  SB_URL = localStorage.getItem('hrb_sb_url')||'';
+  SB_KEY = localStorage.getItem('hrb_sb_key')||'';
+  // Pre-fill modal inputs
+  if(SB_URL) document.getElementById('inp-url').value=SB_URL;
+  if(SB_KEY) document.getElementById('inp-key').value=SB_KEY;
   loadLocal();
   buildTubeGrid();
   buildGridTables();
   refreshStats();
   refreshApplyBtn();
-  await initSupabase();
+  if(SB_URL && SB_KEY){
+    await connectDB();
+  } else {
+    setBadge('🟡 Local only — click to connect DB','#fbbf24');
+  }
 }
 
-// ─────────────────────────────────────────────
-// LOCAL STORAGE
-// ─────────────────────────────────────────────
-function loadLocal(){
-  try{
-    const raw=localStorage.getItem('hrb_data');
-    if(raw){
-      const d=JSON.parse(raw);
-      grid=d.grid||{};
-      history=d.history||[];
-      if(d.shiftName) document.getElementById('shift-name-input').value=d.shiftName;
-    }
-    const url=localStorage.getItem('hrb_sb_url');
-    const key=localStorage.getItem('hrb_sb_key');
-    if(url) document.getElementById('sb-url').value=url;
-    if(key) document.getElementById('sb-key').value=key;
-  }catch(e){}
+// ── SUPABASE REST ──
+async function dbGet(){
+  const r=await fetch(SB_URL+'/rest/v1/hrb_state?id=eq.main&select=data,updated_at&limit=1',
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}});
+  if(!r.ok) throw new Error('GET '+r.status+': '+await r.text());
+  const a=await r.json();
+  return a.length?a[0]:null;
 }
 
-function saveLocal(payload){
-  localStorage.setItem('hrb_data',JSON.stringify(payload));
-}
-
-// ─────────────────────────────────────────────
-// SUPABASE — simple polling, no SDK, no WebSocket
-// Works on Safari iOS, Chrome, Firefox — everything
-// ─────────────────────────────────────────────
-const SB_URL = 'https://mgxcrrgnfoqkjcymgdny.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1neGNycmduZm9xa2pjeW1nZG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NDU0MzUsImV4cCI6MjA5ODEyMTQzNX0.fmtFsUC2yx1xLwV0H-XhKSfwZfDhu6a0_JBAgKXpYBY';
-
-let pollTimer = null;
-let lastUpdatedAt = null;
-
-function sbHeaders(extra){
-  return Object.assign({
-    'apikey': SB_KEY,
-    'Authorization': 'Bearer ' + SB_KEY,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }, extra || {});
-}
-
-async function sbFetch(path, opts){
-  const r = await fetch(SB_URL + path, Object.assign({ mode:'cors' }, opts,
-    { headers: sbHeaders(opts && opts.headers) }));
-  const txt = await r.text();
-  if(!r.ok) throw new Error(r.status + ' ' + txt);
-  return txt ? JSON.parse(txt) : null;
-}
-
-async function sbRead(){
-  const arr = await sbFetch('/rest/v1/hrb_state?id=eq.main&select=data,updated_at&limit=1');
-  if(arr && arr.length) return arr[0];
-  return null;
-}
-
-async function sbWrite(payload){
-  await sbFetch('/rest/v1/hrb_state', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ id:'main', data: payload, updated_at: new Date().toISOString() })
+async function dbUpsert(payload){
+  const r=await fetch(SB_URL+'/rest/v1/hrb_state',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json','Accept':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:'main',data:payload,updated_at:new Date().toISOString()})
   });
+  if(!r.ok) throw new Error('UPSERT '+r.status+': '+await r.text());
 }
 
-async function initSupabase(){
-  localStorage.removeItem('hrb_sb_url');
-  localStorage.removeItem('hrb_sb_key');
+async function connectDB(){
   setBadge('⏳ Connecting…','#fbbf24');
   try{
-    const row = await sbRead();
-    if(!row || !row.data || Object.keys(row.data.grid||{}).length === 0){
-      // Seed with Excel initial data
-      const payload = { grid:{...INITIAL_GRID}, history:[], shiftName: document.getElementById('shift-name-input').value };
-      await sbWrite(payload);
-      applyData(payload);
-      lastUpdatedAt = new Date().toISOString();
-      showToast('✅ Excel data loaded','info');
+    const row=await dbGet();
+    if(!row||!row.data||Object.keys(row.data.grid||{}).length===0){
+      const p={grid:{...INITIAL_GRID},history:[],shiftName:document.getElementById('shift-name-input').value};
+      await dbUpsert(p);
+      applyData(p);
+      lastTs=new Date().toISOString();
+      showToast('✅ Excel data seeded to DB');
     } else {
       applyData(row.data);
-      lastUpdatedAt = row.updated_at;
+      lastTs=row.updated_at;
     }
-    setBadge('🟢 Live (polling)','#4ade80');
-    startPolling();
+    setBadge('🟢 Live','#4ade80');
+    startPoll();
   }catch(e){
-    console.error('Supabase error:',e);
-    setBadge('🔴 DB Error — offline mode','#f87171');
-    showToast('Offline: '+e.message,'err');
-    grid = loadInitialDataIfEmpty(grid);
-    buildGridTables();
-    refreshStats();
+    console.error(e);
+    setBadge('🔴 DB Error — click to configure','#f87171');
+    showToast('DB Error: '+e.message,'err');
   }
 }
 
-function startPolling(){
+function startPoll(){
   if(pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(async ()=>{
+  pollTimer=setInterval(async()=>{
+    if(!SB_URL||!SB_KEY) return;
     try{
-      const row = await sbRead();
-      if(!row) return;
-      // Only apply if remote is newer than what we last wrote
-      if(row.updated_at && row.updated_at !== lastUpdatedAt){
-        lastUpdatedAt = row.updated_at;
-        if(!suppressRemote && row.data){
-          applyData(row.data);
-          showToast('🔄 Updated from another user','info');
-        }
+      const row=await dbGet();
+      if(row&&row.updated_at&&row.updated_at!==lastTs&&!suppressRemote){
+        lastTs=row.updated_at;
+        applyData(row.data);
+        showToast('🔄 Updated by another user');
       }
-    }catch(e){ /* silent fail on poll — badge stays green */ }
-  }, 5000); // poll every 5 seconds
+    }catch(e){}
+  },5000);
 }
 
-async function pushToSupabase(payload){
-  suppressRemote = true;
+// ── SAVE ──
+function saveLocal(){
+  localStorage.setItem('hrb_data',JSON.stringify({grid,history,shiftName:document.getElementById('shift-name-input').value}));
+}
+function loadLocal(){
   try{
-    const ts = new Date().toISOString();
-    await sbWrite(payload);
-    lastUpdatedAt = ts;
-  }catch(e){
-    console.warn('Push failed:',e);
-    setBadge('🟡 Sync warning','#fbbf24');
-  }
-  setTimeout(()=>{ suppressRemote = false; }, 2000);
+    const r=localStorage.getItem('hrb_data');
+    if(r){const d=JSON.parse(r);grid=d.grid||{};history=d.history||[];if(d.shiftName)document.getElementById('shift-name-input').value=d.shiftName;}
+    else{grid={...INITIAL_GRID};}
+  }catch(e){grid={...INITIAL_GRID};}
 }
-
-async function seedInitialData(){
-  const payload = { grid:{...INITIAL_GRID}, history:[], shiftName: document.getElementById('shift-name-input').value };
-  await sbWrite(payload);
-  applyData(payload);
+async function save(){
+  const p={grid,history,shiftName:document.getElementById('shift-name-input').value};
+  saveLocal();
+  if(!SB_URL||!SB_KEY) return;
+  suppressRemote=true;
+  try{await dbUpsert(p);lastTs=new Date().toISOString();setBadge('🟢 Live','#4ade80');}
+  catch(e){setBadge('🟡 Offline','#fbbf24');}
+  setTimeout(()=>suppressRemote=false,2000);
 }
-
-// pushToSupabase is now defined in the Supabase polling block above
-
 function applyData(data){
-  grid=data.grid||{};
-  history=data.history||[];
-  if(data.shiftName) document.getElementById('shift-name-input').value=data.shiftName;
-  saveLocal(data);
-  buildGridTables();
-  refreshStats();
+  grid=data.grid||{};history=data.history||[];
+  if(data.shiftName)document.getElementById('shift-name-input').value=data.shiftName;
+  saveLocal();buildGridTables();refreshStats();
 }
 
-function setBadge(txt,color){
-  const b=document.getElementById('sync-badge');
-  b.textContent=txt;b.style.color=color;b.style.borderColor=color;
-}
+// ── SELECTORS ──
+function selectRow(r){selRow=r;document.querySelectorAll('.row-btn').forEach(b=>b.classList.toggle('active',b.dataset.row===r));highlightGrid();refreshApplyBtn();}
+function selectTube(t){selTube=t;document.querySelectorAll('.tube-btn').forEach(b=>b.classList.toggle('active',b.dataset.t==t));highlightGrid();refreshApplyBtn();}
+function selectStatus(s){selStatus=s;document.querySelectorAll('.status-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===s));refreshApplyBtn();}
+function filterTubes(v){document.querySelectorAll('.tube-btn').forEach(b=>{b.style.display=(!v||String(b.dataset.t).includes(v))?'':'none';});}
 
-// ─────────────────────────────────────────────
-// SAVE (local + Supabase)
-// ─────────────────────────────────────────────
-function save(){
-  const payload={grid,history,shiftName:document.getElementById('shift-name-input').value};
-  saveLocal(payload);
-  pushToSupabase(payload);
-}
-
-// ─────────────────────────────────────────────
-// SELECTORS
-// ─────────────────────────────────────────────
-function selectRow(r){
-  selRow=r;
-  document.querySelectorAll('.row-btn').forEach(b=>b.classList.toggle('active',b.dataset.row===r));
-  highlightGrid();refreshApplyBtn();
-}
-function selectTube(t){
-  selTube=t;
-  document.querySelectorAll('.tube-btn').forEach(b=>b.classList.toggle('active',b.dataset.t==t));
-  highlightGrid();refreshApplyBtn();
-}
-function selectStatus(s){
-  selStatus=s;
-  document.querySelectorAll('.status-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
-  refreshApplyBtn();
-}
-function filterTubes(v){
-  document.querySelectorAll('.tube-btn').forEach(b=>{
-    b.style.display=(!v||String(b.dataset.t).includes(v))?'':'none';
-  });
-}
-
-// ─────────────────────────────────────────────
-// APPLY
-// ─────────────────────────────────────────────
-function applySelection(){
-  if(!selRow||!selTube||!selStatus) return;
+// ── APPLY ──
+async function applySelection(){
+  if(!selRow||!selTube||!selStatus)return;
   const key=`${selRow}-${selTube}`;
-  if(selStatus==='clear'){ delete grid[key]; }else{ grid[key]=selStatus; }
-  save();
-  updateCell(key);
-  updateTubeDot(selTube);
-  refreshStats();
-  showToast(`✓ Row ${selRow}, Tube ${selTube} → ${selStatus==='clear'?'Cleared':CODES[selStatus]}`);
+  if(selStatus==='clear'){delete grid[key];}else{grid[key]=selStatus;}
+  await save();updateCell(key);updateTubeDot(selTube);refreshStats();
+  showToast(`✓ ${selRow}-${selTube} → ${selStatus==='clear'?'Cleared':CODES[selStatus]}`);
 }
-
 function refreshApplyBtn(){
   const btn=document.getElementById('apply-btn');
   if(selRow&&selTube&&selStatus){
@@ -481,42 +449,31 @@ function refreshApplyBtn(){
   }
 }
 
-// ─────────────────────────────────────────────
-// TUBE # GRID
-// ─────────────────────────────────────────────
+// ── TUBE GRID ──
 function buildTubeGrid(){
-  const wrap=document.getElementById('tube-grid');wrap.innerHTML='';
+  const w=document.getElementById('tube-grid');w.innerHTML='';
   for(let t=1;t<=95;t++){
-    const btn=document.createElement('button');
-    btn.className='tube-btn';btn.dataset.t=t;btn.textContent=t;
-    const dot=document.createElement('span');dot.className='sdot';dot.id='sdot-'+t;
-    btn.appendChild(dot);
-    btn.onclick=()=>selectTube(t);
-    wrap.appendChild(btn);
+    const b=document.createElement('button');b.className='tube-btn';b.dataset.t=t;b.textContent=t;
+    const d=document.createElement('span');d.className='sdot';d.id='sdot-'+t;
+    b.appendChild(d);b.onclick=()=>selectTube(t);w.appendChild(b);
   }
-  for(let t=1;t<=95;t++) updateTubeDot(t);
+  for(let t=1;t<=95;t++)updateTubeDot(t);
 }
-
 function updateTubeDot(t){
-  const dot=document.getElementById('sdot-'+t);if(!dot)return;
-  let clr='transparent';
-  ROWS.forEach(r=>{const s=grid[`${r}-${t}`];if(s)clr=CLRS[s]||'transparent';});
-  dot.style.background=clr;
+  const d=document.getElementById('sdot-'+t);if(!d)return;
+  let c='transparent';ROWS.forEach(r=>{const s=grid[`${r}-${t}`];if(s)c=CLRS[s]||c;});
+  d.style.background=c;
 }
 
-// ─────────────────────────────────────────────
-// GRID TABLES
-// ─────────────────────────────────────────────
+// ── GRID TABLES ──
 function buildGridTables(){
   const area=document.getElementById('grid-area');area.innerHTML='';
   [{label:'CORSIBD END',from:51,to:95},{label:'PG COMPRESSOR END',from:1,to:50}].forEach(sec=>{
     const lbl=document.createElement('div');lbl.className='section-label';lbl.textContent=sec.label;area.appendChild(lbl);
     const tbl=document.createElement('table');tbl.className='grid-table';
     const thead=document.createElement('thead');const hr=document.createElement('tr');
-    const blank=document.createElement('th');blank.className='rh';hr.appendChild(blank);
-    for(let t=sec.to;t>=sec.from;t--){
-      const th=document.createElement('th');th.className='ch'+(t%5===0?' g5':'');th.textContent=t;hr.appendChild(th);
-    }
+    const bl=document.createElement('th');bl.className='rh';hr.appendChild(bl);
+    for(let t=sec.to;t>=sec.from;t--){const th=document.createElement('th');th.className='ch'+(t%5===0?' g5':'');th.textContent=t;hr.appendChild(th);}
     thead.appendChild(hr);tbl.appendChild(thead);
     const tbody=document.createElement('tbody');
     ROWS.forEach(row=>{
@@ -524,23 +481,19 @@ function buildGridTables(){
       const rh=document.createElement('td');rh.className='rh';rh.textContent=row;tr.appendChild(rh);
       for(let t=sec.to;t>=sec.from;t--){
         const key=`${row}-${t}`;
-        const td=document.createElement('td');
-        td.id='cell-'+key;
-        const g5=t%5===0?' g5':'';
-        const state=grid[key]||'';
-        td.className='tube-cell'+g5+(state?' '+state:'');
-        td.textContent=CODES[state]||'';
-        td.onclick=()=>{ selectRow(row); selectTube(t); };
+        const td=document.createElement('td');td.id='cell-'+key;
+        td.className='tube-cell'+(t%5===0?' g5':'')+(grid[key]?' '+grid[key]:'');
+        td.textContent=CODES[grid[key]]||'';
+        td.onclick=()=>{selectRow(row);selectTube(t);};
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
     });
     tbl.appendChild(tbody);area.appendChild(tbl);
   });
-  for(let t=1;t<=95;t++) updateTubeDot(t);
+  for(let t=1;t<=95;t++)updateTubeDot(t);
   highlightGrid();
 }
-
 function updateCell(key){
   const td=document.getElementById('cell-'+key);if(!td)return;
   const state=grid[key]||'';
@@ -549,51 +502,39 @@ function updateCell(key){
   td.className='tube-cell'+g5+(state?' '+state:'')+sel;
   td.textContent=CODES[state]||'';
 }
-
 function highlightGrid(){
   document.querySelectorAll('.tube-cell').forEach(td=>td.classList.remove('sel-row','sel-col','sel-both'));
-  if(selRow) for(let t=1;t<=95;t++){const td=document.getElementById(`cell-${selRow}-${t}`);if(td&&!grid[`${selRow}-${t}`])td.classList.add('sel-row');}
-  if(selTube) ROWS.forEach(r=>{const td=document.getElementById(`cell-${r}-${selTube}`);if(td&&!grid[`${r}-${selTube}`])td.classList.add('sel-col');});
+  if(selRow)for(let t=1;t<=95;t++){const td=document.getElementById(`cell-${selRow}-${t}`);if(td&&!grid[`${selRow}-${t}`])td.classList.add('sel-row');}
+  if(selTube)ROWS.forEach(r=>{const td=document.getElementById(`cell-${r}-${selTube}`);if(td&&!grid[`${r}-${selTube}`])td.classList.add('sel-col');});
   if(selRow&&selTube){const td=document.getElementById(`cell-${selRow}-${selTube}`);if(td){td.classList.remove('sel-row','sel-col');td.classList.add('sel-both');}}
 }
 
-// ─────────────────────────────────────────────
-// STATS
-// ─────────────────────────────────────────────
+// ── STATS ──
 function calcStats(g){
   const s={};ROWS.forEach(r=>{s[r]={lifted:0,replaced:0,dogleg:0,catfill:0,bowed:0,dt:0};});
   Object.entries(g).forEach(([key,state])=>{const row=key.split('-')[0];if(s[row]&&state)s[row][state]=(s[row][state]||0)+1;});
   const tot={lifted:0,replaced:0,dogleg:0,catfill:0,bowed:0,dt:0};
-  ROWS.forEach(r=>STATES.forEach(st=>{tot[st]+=s[r][st]||0;}));
-  s.total=tot;return s;
+  ROWS.forEach(r=>STATES.forEach(st=>{tot[st]+=s[r][st]||0;}));s.total=tot;return s;
 }
-
 function renderStat(stats,id){
   const tbody=document.getElementById(id);tbody.innerHTML='';
   const rc={A:CLRS.lifted,B:CLRS.replaced,C:CLRS.dogleg,D:CLRS.catfill,E:CLRS.bowed,F:CLRS.dt};
-  ROWS.forEach(r=>{
-    const s=stats[r];const tr=document.createElement('tr');
+  ROWS.forEach(r=>{const s=stats[r];const tr=document.createElement('tr');
     tr.innerHTML=`<td style="color:${rc[r]}">${r}</td><td>${s.lifted||0}</td><td>${s.replaced||0}</td><td>${s.dogleg||0}</td><td>${s.catfill||0}</td><td>${s.bowed||0}</td><td>${s.dt||0}</td>`;
-    tbody.appendChild(tr);
-  });
+    tbody.appendChild(tr);});
   const t=stats.total;const tot=document.createElement('tr');tot.className='tot';
   tot.innerHTML=`<td>Σ</td><td>${t.lifted}</td><td>${t.replaced}</td><td>${t.dogleg}</td><td>${t.catfill}</td><td>${t.bowed}</td><td>${t.dt}</td>`;
   tbody.appendChild(tot);
 }
-
 function cumulStats(){
-  const m={...grid};
-  history.forEach(sh=>Object.entries(sh.grid).forEach(([k,v])=>{if(!m[k])m[k]=v;}));
+  const m={...grid};history.forEach(sh=>Object.entries(sh.grid).forEach(([k,v])=>{if(!m[k])m[k]=v;}));
   return calcStats(m);
 }
-
 function refreshStats(){
   renderStat(calcStats(grid),'cur-stats');
   renderStat(cumulStats(),'cum-stats');
   renderHistory();
-  buildPrintFooter();
 }
-
 function renderHistory(){
   const w=document.getElementById('hist-wrap');
   if(!history.length){w.innerHTML='<span style="color:var(--muted);font-size:10px">No archived shifts yet.</span>';return;}
@@ -608,116 +549,138 @@ function renderHistory(){
   });
 }
 
-// ─────────────────────────────────────────────
-// SHIFT END
-// ─────────────────────────────────────────────
-function endShift(){
+// ── SHIFT END ──
+async function endShift(){
   const name=document.getElementById('shift-name-input').value.trim()||`Shift ${history.length+1}`;
-  if(!confirm(`End "${name}" and start a new shift?`)) return;
+  if(!confirm(`End "${name}" and start a new shift?`))return;
   history.push({name,grid:{...grid},stats:calcStats(grid)});
-  grid={};
-  const n=history.length+1;
+  grid={};const n=history.length+1;
   document.getElementById('shift-name-input').value=`Shift ${n}`;
   selRow=null;selTube=null;
-  document.querySelectorAll('.row-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tube-btn').forEach(b=>b.classList.remove('active'));
-  save();buildGridTables();refreshStats();refreshApplyBtn();
+  document.querySelectorAll('.row-btn,.tube-btn').forEach(b=>b.classList.remove('active'));
+  await save();buildGridTables();refreshStats();refreshApplyBtn();
   showToast(`"${name}" archived. Shift ${n} started.`);
 }
 
-// ─────────────────────────────────────────────
-// RESET
-// ─────────────────────────────────────────────
+// ── RESET ──
 async function resetAll(){
-  if(!confirm('Reset ALL data including all shift history? This cannot be undone.')) return;
-  grid={};history=[];
-  const payload={grid:{},history:[],shiftName:'Shift 1'};
-  saveLocal(payload);
-  await pushToSupabase(payload);
-  document.getElementById('shift-name-input').value='Shift 1';
+  if(!confirm('Reset ALL data including shift history?'))return;
+  grid={};history=[];document.getElementById('shift-name-input').value='Shift 1';
   selRow=null;selTube=null;selStatus=null;
   document.querySelectorAll('.row-btn,.tube-btn,.status-btn').forEach(b=>b.classList.remove('active'));
-  buildGridTables();buildTubeGrid();refreshStats();refreshApplyBtn();
+  await save();buildGridTables();buildTubeGrid();refreshStats();refreshApplyBtn();
   showToast('All data cleared.');
 }
 
-// ─────────────────────────────────────────────
-// SETUP MODAL
-// ─────────────────────────────────────────────
-function openSetup(){
-  document.getElementById('setup-modal').classList.add('open');
+// ── CONNECTION MODAL ──
+function openConn(){
+  document.getElementById('conn-modal').classList.add('open');
+  document.getElementById('conn-status').className='conn-status';
 }
-function closeSetup(){
-  document.getElementById('setup-modal').classList.remove('open');
+function closeConn(){document.getElementById('conn-modal').classList.remove('open');}
+function setConnStatus(msg,type){
+  const el=document.getElementById('conn-status');
+  el.textContent=msg;el.className='conn-status '+type;
 }
-async function saveSupabaseConfig(){
-  const url=document.getElementById('sb-url').value.trim();
-  const key=document.getElementById('sb-key').value.trim();
-  if(!url||!key){showToast('Please enter both URL and key','err');return;}
+async function testConn(){
+  const url=document.getElementById('inp-url').value.trim();
+  const key=document.getElementById('inp-key').value.trim();
+  if(!url||!key){setConnStatus('Please enter both URL and key','err');return;}
+  setConnStatus('⏳ Testing connection…','');
+  document.getElementById('conn-status').style.display='block';
+  try{
+    const r=await fetch(url+'/rest/v1/hrb_state?id=eq.main&select=id&limit=1',
+      {headers:{'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'}});
+    if(!r.ok){const t=await r.text();setConnStatus('❌ Error '+r.status+': '+t,'err');}
+    else{const a=await r.json();setConnStatus('✅ Connected! Table found. Rows: '+a.length,'ok');}
+  }catch(e){setConnStatus('❌ '+e.message,'err');}
+}
+async function saveConn(){
+  const url=document.getElementById('inp-url').value.trim();
+  const key=document.getElementById('inp-key').value.trim();
+  if(!url||!key){setConnStatus('Please enter both URL and key','err');return;}
+  SB_URL=url;SB_KEY=key;
   localStorage.setItem('hrb_sb_url',url);
   localStorage.setItem('hrb_sb_key',key);
-  closeSetup();
-  showToast('Config saved — connecting…');
-  // Disconnect old channel if any
-  if(sbChannel&&sbClient){sbClient.removeChannel(sbChannel);sbChannel=null;}
-  sbClient=null;
-  await initSupabase();
+  closeConn();
+  await connectDB();
 }
 function copySQL(){
-  const sql=document.getElementById('setup-sql').textContent;
-  navigator.clipboard.writeText(sql).then(()=>showToast('SQL copied to clipboard!'));
+  const sql=`create table if not exists hrb_state (\n  id text primary key,\n  data jsonb not null,\n  updated_at timestamptz default now()\n);\nalter table hrb_state disable row level security;\ninsert into hrb_state (id, data)\nvalues ('main', '{"grid":{},"history":[],"shiftName":"Shift 1"}')\non conflict (id) do nothing;`;
+  navigator.clipboard.writeText(sql).then(()=>showToast('SQL copied!')).catch(()=>showToast('Copy manually from the modal'));
 }
 
-// ─────────────────────────────────────────────
-// PRINT FOOTER
-// ─────────────────────────────────────────────
-function buildPrintFooter(){
-  document.getElementById('pf-shift').textContent=document.getElementById('shift-name-input').value;
-  document.getElementById('pf-date').textContent=new Date().toLocaleString();
-  const s=calcStats(grid);const t=s.total;
-  let h=`<table border="1" cellpadding="3" style="border-collapse:collapse;font-size:8pt;margin-top:4pt">
-    <tr><th>Row</th><th>Lifted(I)</th><th>Replaced(R)</th><th>Dogleg(DI)</th><th>Cat.Filled(CF)</th><th>Bowed(RD)</th><th>D&T</th></tr>`;
-  ROWS.forEach(r=>{const rs=s[r];h+=`<tr><td>${r}</td><td>${rs.lifted}</td><td>${rs.replaced}</td><td>${rs.dogleg}</td><td>${rs.catfill}</td><td>${rs.bowed}</td><td>${rs.dt}</td></tr>`;});
-  h+=`<tr><td><b>Total</b></td><td>${t.lifted}</td><td>${t.replaced}</td><td>${t.dogleg}</td><td>${t.catfill}</td><td>${t.bowed}</td><td>${t.dt}</td></tr></table>`;
+// ── BADGE ──
+function setBadge(txt,color){
+  const b=document.getElementById('sync-badge');
+  b.textContent=txt;b.style.color=color;b.style.borderColor=color;
+}
+
+// ── PRINT ──
+function doPrint(){
+  buildPrintSheet();
+  document.getElementById('print-sheet').classList.add('visible');
+  setTimeout(()=>{ window.print(); },300);
+}
+
+function buildPrintSheet(){
+  const shiftName=document.getElementById('shift-name-input').value;
+  const stats=calcStats(grid);const cumul=cumulStats();
+  let h='';
+  h+=`<div class="ps-title">Heat Recovery Boiler — Tube Maintenance Tracker</div>`;
+  h+=`<div class="ps-sub"><span>Shift: <b>${shiftName}</b></span><span>109 Tubes replaced 2022/2024 · 461 remaining 2026</span><span>${new Date().toLocaleString()}</span></div>`;
+  h+=`<table class="ps-grid"><thead>`;
+  // Bay row
+  h+=`<tr><td class="ps-corner" rowspan="2">Furnace<br>End</td><td class="ps-corner" rowspan="2">Row</td>`;
+  for(let b=19;b>=1;b--) h+=`<td class="ps-bay" colspan="5">Bay ${b}</td>`;
+  h+=`<td class="ps-endlabel" rowspan="8">Heat Recovery End</td></tr>`;
+  // Tube number row
+  h+=`<tr>`;
+  for(let t=95;t>=1;t--) h+=`<td class="ps-tubenum${t%5===0?' g5':''}">${t}</td>`;
+  h+=`</tr></thead><tbody>`;
+  // Data rows F→A
+  ['F','E','D','C','B','A'].forEach(row=>{
+    h+=`<tr><td class="ps-corner"></td><td class="ps-rowlabel">Row ${row}</td>`;
+    for(let t=95;t>=1;t--){
+      const state=grid[`${row}-${t}`]||'';
+      h+=`<td class="${state}">${state?CODES[state]:''}</td>`;
+    }
+    h+=`</tr>`;
+  });
+  h+=`</tbody></table>`;
+  // Legend
+  h+=`<div class="ps-legend"><b>Legend:</b>
+    <span class="ps-leg"><span class="ps-dot" style="background:#f9a8d4"></span>I=Lifted</span>
+    <span class="ps-leg"><span class="ps-dot" style="background:#93c5fd"></span>R=Replaced</span>
+    <span class="ps-leg"><span class="ps-dot" style="background:#fdba74"></span>DI=Dogleg Fixed</span>
+    <span class="ps-leg"><span class="ps-dot" style="background:#d8b4fe"></span>CF=Cat.Filled</span>
+    <span class="ps-leg"><span class="ps-dot" style="background:#86efac"></span>RD=Bowed Up</span>
+    <span class="ps-leg"><span class="ps-dot" style="background:#fde68a"></span>D&T=Dogleg &amp; Tube Repl.</span>
+  </div>`;
+  // Stats
+  h+=`<div class="ps-stats">`;
+  h+=`<table><tr><th colspan="7">${shiftName}</th></tr><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
+  ROWS.forEach(r=>{const s=stats[r];h+=`<tr><td>${r}</td><td>${s.lifted||0}</td><td>${s.replaced||0}</td><td>${s.dogleg||0}</td><td>${s.catfill||0}</td><td>${s.bowed||0}</td><td>${s.dt||0}</td></tr>`;});
+  const t=stats.total;h+=`<tr><td><b>Σ</b></td><td><b>${t.lifted}</b></td><td><b>${t.replaced}</b></td><td><b>${t.dogleg}</b></td><td><b>${t.catfill}</b></td><td><b>${t.bowed}</b></td><td><b>${t.dt}</b></td></tr></table>`;
   if(history.length){
-    h+='<br><b>Previous Shifts:</b><br>';
-    history.forEach(sh=>{const st=sh.stats.total;h+=`${sh.name}: I=${st.lifted} R=${st.replaced} DI=${st.dogleg} CF=${st.catfill} RD=${st.bowed} D&T=${st.dt}<br>`;});
+    const ct=cumul.total;
+    h+=`<table><tr><th colspan="7">Cumulative</th></tr><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
+    ROWS.forEach(r=>{const s=cumul[r];h+=`<tr><td>${r}</td><td>${s.lifted||0}</td><td>${s.replaced||0}</td><td>${s.dogleg||0}</td><td>${s.catfill||0}</td><td>${s.bowed||0}</td><td>${s.dt||0}</td></tr>`;});
+    h+=`<tr><td><b>Σ</b></td><td><b>${ct.lifted}</b></td><td><b>${ct.replaced}</b></td><td><b>${ct.dogleg}</b></td><td><b>${ct.catfill}</b></td><td><b>${ct.bowed}</b></td><td><b>${ct.dt}</b></td></tr>`;
+    h+=`<tr><th colspan="7">Shift History</th></tr><tr><th>Shift</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
+    history.forEach(sh=>{const s=sh.stats.total;h+=`<tr><td>${sh.name}</td><td>${s.lifted}</td><td>${s.replaced}</td><td>${s.dogleg}</td><td>${s.catfill}</td><td>${s.bowed}</td><td>${s.dt}</td></tr>`;});
+    h+=`</table>`;
   }
-  document.getElementById('pf-table').innerHTML=h;
+  h+=`</div>`;
+  document.getElementById('print-sheet').innerHTML=h;
 }
 
-// ─────────────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────────────
-function showToast(msg, type='info'){
+// ── TOAST ──
+function showToast(msg,type='info'){
   const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.style.background=type==='err'?'#7f1d1d':'#1d4ed8';
-  t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+  t.textContent=msg;t.style.background=type==='err'?'#7f1d1d':'#1d4ed8';
+  t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
 }
-
-
-// ─────────────────────────────────────────────
-// INITIAL DATA FROM EXCEL (pre-loaded)
-// ─────────────────────────────────────────────
-const INITIAL_GRID = {"F-84": "lifted", "F-75": "dogleg", "F-74": "dogleg", "F-73": "dogleg", "F-72": "dogleg", "F-71": "dogleg", "F-70": "replaced", "F-69": "replaced", "F-68": "replaced", "F-67": "replaced", "F-66": "replaced", "F-65": "lifted", "F-62": "catfill", "F-61": "lifted", "F-59": "lifted", "F-58": "lifted", "F-57": "lifted", "F-50": "bowed", "F-49": "catfill", "F-48": "catfill", "F-44": "catfill", "F-41": "catfill", "F-38": "catfill", "F-37": "catfill", "F-36": "catfill", "F-33": "catfill", "F-32": "catfill", "F-31": "catfill", "F-30": "lifted", "F-26": "catfill", "F-25": "catfill", "F-24": "catfill", "F-22": "lifted", "F-21": "catfill", "F-20": "catfill", "F-19": "lifted", "F-18": "lifted", "F-17": "lifted", "F-16": "lifted", "F-15": "catfill", "F-14": "replaced", "F-13": "catfill", "F-12": "dogleg", "F-11": "catfill", "F-10": "catfill", "F-9": "catfill", "F-8": "dogleg", "F-7": "dogleg", "F-6": "dogleg", "F-5": "dogleg", "F-4": "dogleg", "F-3": "dogleg", "F-2": "dogleg", "F-1": "dogleg", "E-95": "lifted", "E-94": "lifted", "E-93": "lifted", "E-92": "lifted", "E-91": "lifted", "E-90": "lifted", "E-89": "lifted", "E-88": "lifted", "E-87": "lifted", "E-86": "lifted", "E-85": "lifted", "E-84": "lifted", "E-83": "lifted", "E-81": "lifted", "E-80": "lifted", "E-79": "lifted", "E-77": "lifted", "E-55": "lifted", "E-54": "lifted", "E-53": "lifted", "E-49": "catfill", "E-42": "catfill", "E-35": "catfill", "E-34": "catfill", "E-33": "catfill", "E-29": "replaced", "E-27": "dogleg", "E-26": "catfill", "E-25": "catfill", "E-24": "catfill", "E-23": "catfill", "E-22": "catfill", "E-21": "catfill", "E-20": "catfill", "E-19": "catfill", "E-18": "catfill", "E-16": "replaced", "E-15": "replaced", "E-14": "catfill", "E-13": "replaced", "E-12": "replaced", "E-11": "replaced", "E-10": "catfill", "E-9": "lifted", "E-8": "catfill", "E-7": "replaced", "E-6": "replaced", "E-5": "catfill", "E-4": "catfill", "E-3": "catfill", "E-2": "lifted", "E-1": "lifted", "D-49": "catfill", "D-48": "catfill", "D-41": "catfill", "D-37": "catfill", "D-35": "catfill", "D-33": "catfill", "D-31": "catfill", "D-25": "dogleg", "D-24": "catfill", "D-23": "catfill", "D-21": "catfill", "D-20": "catfill", "D-19": "catfill", "D-18": "catfill", "D-16": "catfill", "D-14": "catfill", "D-12": "catfill", "D-9": "dogleg", "D-7": "catfill", "D-6": "catfill", "C-51": "catfill", "C-50": "catfill", "C-42": "catfill", "C-41": "catfill", "C-35": "catfill", "C-34": "catfill", "C-33": "catfill", "C-31": "catfill", "C-22": "catfill", "C-21": "catfill", "C-20": "catfill", "C-18": "catfill", "C-17": "catfill", "C-14": "catfill", "C-13": "catfill", "C-10": "catfill", "C-8": "catfill", "C-6": "catfill", "B-89": "catfill", "B-43": "catfill", "B-35": "catfill", "B-25": "catfill", "B-22": "catfill", "B-20": "catfill", "B-19": "catfill", "B-17": "catfill", "B-10": "catfill", "B-9": "catfill", "B-5": "catfill", "A-83": "catfill", "A-81": "lifted", "A-80": "lifted", "A-79": "lifted", "A-78": "lifted", "A-77": "catfill", "A-68": "lifted", "A-67": "lifted", "A-66": "lifted", "A-65": "replaced", "A-64": "replaced", "A-63": "replaced", "A-62": "replaced", "A-61": "replaced", "A-59": "lifted", "A-42": "catfill", "A-40": "lifted", "A-39": "catfill", "A-37": "catfill", "A-35": "catfill", "A-32": "lifted", "A-31": "lifted", "A-27": "catfill", "A-25": "catfill", "A-21": "catfill", "A-20": "catfill", "A-19": "catfill", "A-18": "catfill", "A-15": "catfill", "A-14": "catfill", "A-10": "catfill", "A-9": "catfill", "A-8": "catfill", "A-5": "catfill"};
-
-function loadInitialDataIfEmpty(currentGrid) {
-  // Only apply if no data exists yet (first ever load)
-  if (Object.keys(currentGrid).length === 0) {
-    return { ...INITIAL_GRID };
-  }
-  return currentGrid;
-}
-
-
-// Override load to inject initial data if localStorage is empty
-const _origLoad = loadLocal;
-loadLocal = function() {
-  _origLoad();
-  grid = loadInitialDataIfEmpty(grid);
-};
 
 init();
 </script>
