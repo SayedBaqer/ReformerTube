@@ -140,7 +140,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <input id="shift-name-input" value="Shift 1" placeholder="Shift name" oninput="save()">
   <button class="top-btn end" onclick="endShift()">⏱ End Shift</button>
   <button class="top-btn print-btn" onclick="window.print()">🖨 Print</button>
-  <button class="top-btn sb" onclick="openSetup()">🗄 Supabase Setup</button>
+  <button class="top-btn sb" onclick="openSetup()">🗄 DB SQL</button>
   <button class="top-btn danger" onclick="resetAll()">🗑 Reset</button>
 </div>
 
@@ -215,22 +215,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <!-- Supabase Setup Modal -->
 <div class="modal-bg" id="setup-modal">
   <div class="modal-box">
-    <h2>🗄 Supabase Live Sync Setup</h2>
-    <div class="subtitle">Real-time sync across all users — free tier is plenty</div>
+    <h2>🗄 Supabase DB — One-Time SQL Setup</h2>
+    <div class="subtitle">Run this SQL once in your Supabase project to enable sync</div>
 
     <div class="modal-steps">
-      <b>One-time setup (5 minutes):</b><br>
-      1. Create a free project at <a href="https://supabase.com" target="_blank">supabase.com</a><br>
-      2. Go to <b>SQL Editor</b> and run the setup SQL below<br>
-      3. Go to <b>Project Settings → API</b><br>
-      4. Copy your <b>Project URL</b> and <b>anon public</b> key<br>
-      5. Paste below, click Save — then share this HTML with your team
+      <b>Project:</b> mgxcrrgnfoqkjcymgdny.supabase.co<br><br>
+      1. Go to <b>supabase.com</b> → your project → <b>SQL Editor</b><br>
+      2. Paste the SQL below and click <b>Run</b><br>
+      3. Done — all users can now sync live with no further config
     </div>
 
-    <details style="margin-bottom:12px;cursor:pointer">
-      <summary style="font-size:11px;color:var(--sb);font-weight:700;margin-bottom:6px">▶ Click to show the SQL to run in Supabase</summary>
-      <pre id="setup-sql" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px;font-size:10px;color:#a5f3fc;overflow-x:auto;margin-top:6px;line-height:1.6">
--- Run this in Supabase SQL Editor:
+    <pre id="setup-sql" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px;font-size:10px;color:#a5f3fc;overflow-x:auto;margin-bottom:10px;line-height:1.7">
+-- Run once in Supabase SQL Editor:
 
 create table if not exists hrb_state (
   id text primary key,
@@ -238,29 +234,16 @@ create table if not exists hrb_state (
   updated_at timestamptz default now()
 );
 
--- Enable real-time for this table
 alter publication supabase_realtime add table hrb_state;
 
--- Insert initial empty row
 insert into hrb_state (id, data)
 values ('main', '{"grid":{},"history":[],"shiftName":"Shift 1"}')
 on conflict (id) do nothing;
-      </pre>
-      <button class="top-btn" style="margin-top:4px;font-size:10px" onclick="copySQL()">📋 Copy SQL</button>
-    </details>
-
-    <div class="field-group">
-      <label>Supabase Project URL</label>
-      <input id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" autocomplete="off">
-    </div>
-    <div class="field-group">
-      <label>Supabase Anon Public Key</label>
-      <input id="sb-key" placeholder="eyJhbGciOi..." autocomplete="off">
-    </div>
+    </pre>
 
     <div class="modal-footer">
-      <button class="top-btn" onclick="closeSetup()">Cancel</button>
-      <button class="btn-sb" onclick="saveSupabaseConfig()">Save &amp; Connect</button>
+      <button class="top-btn" style="font-size:11px" onclick="copySQL()">📋 Copy SQL</button>
+      <button class="top-btn" onclick="closeSetup()">Close</button>
     </div>
   </div>
 </div>
@@ -317,51 +300,79 @@ function saveLocal(payload){
 }
 
 // ─────────────────────────────────────────────
-// SUPABASE
+// SUPABASE — credentials hard-coded
 // ─────────────────────────────────────────────
+const SB_URL = 'https://mgxcrrgnfoqkjcymgdny.supabase.co';
+const SB_KEY = 'sb_publishable_sYk9WRgxNfjBJQJgw3UiFA_poz3nV6L';
+
 async function initSupabase(){
-  const url=localStorage.getItem('hrb_sb_url');
-  const key=localStorage.getItem('hrb_sb_key');
-  if(!url||!key){ setBadge('⚪ Offline (localStorage)','var(--muted)'); return; }
-
+  const url = localStorage.getItem('hrb_sb_url') || SB_URL;
+  const key = localStorage.getItem('hrb_sb_key') || SB_KEY;
   setBadge('⏳ Connecting…','#fbbf24');
-
   try{
-    // Dynamically load Supabase JS SDK
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
     sbClient = supabase.createClient(url, key);
 
     // Fetch current state from DB
-    const {data,error}=await sbClient.from('hrb_state').select('data').eq('id','main').single();
-    if(error) throw error;
-    if(data&&data.data){
-      applyData(data.data);
+    const {data, error} = await sbClient.from('hrb_state').select('data').eq('id','main').single();
+
+    if(error && (error.code === 'PGRST116' || error.message.includes('0 rows'))){
+      // Row does not exist yet — seed with Excel initial data
+      await seedInitialData();
+    } else if(error){
+      throw error;
+    } else if(data && data.data){
+      const remote = data.data;
+      if(!remote.grid || Object.keys(remote.grid).length === 0){
+        await seedInitialData();
+      } else {
+        applyData(remote);
+      }
     }
 
     // Subscribe to real-time changes
     sbChannel = sbClient
-      .channel('hrb-changes')
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'hrb_state',filter:'id=eq.main'},
+      .channel('hrb-live')
+      .on('postgres_changes',
+        {event:'UPDATE', schema:'public', table:'hrb_state', filter:'id=eq.main'},
         (payload)=>{
           if(suppressRemote) return;
-          if(payload.new&&payload.new.data){
+          if(payload.new && payload.new.data){
             applyData(payload.new.data);
-            showToast('🔄 Synced from remote','info');
+            showToast('Synced from remote','info');
           }
         }
       )
       .subscribe((status)=>{
         if(status==='SUBSCRIBED'){
-          setBadge('🟢 Live Sync','#4ade80');
+          setBadge('Live Sync ON','#4ade80');
         } else if(status==='CHANNEL_ERROR'){
-          setBadge('🔴 Sync Error','#f87171');
+          setBadge('Sync Error','#f87171');
         }
       });
 
   }catch(e){
     console.error('Supabase error:',e);
-    setBadge('🔴 Error — check config','#f87171');
-    showToast('Supabase connection failed: '+e.message,'err');
+    setBadge('DB Error','#f87171');
+    showToast('Supabase: '+e.message,'err');
+    grid = loadInitialDataIfEmpty(grid);
+    buildGridTables();
+    refreshStats();
+  }
+}
+
+async function seedInitialData(){
+  const shiftName = document.getElementById('shift-name-input').value;
+  const payload = { grid: {...INITIAL_GRID}, history: [], shiftName };
+  try{
+    await sbClient.from('hrb_state').upsert({
+      id: 'main', data: payload, updated_at: new Date().toISOString()
+    });
+    applyData(payload);
+    showToast('Initial data loaded from Excel','info');
+  }catch(e){
+    console.error('Seed error:',e);
+    applyData(payload);
   }
 }
 
