@@ -16,22 +16,22 @@
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
 /* ── TOPBAR ── */
-#topbar{background:#0a1020;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;z-index:50}
-#topbar h1{font-size:13px;font-weight:700;color:#fff;flex:1;min-width:140px}
-#sync-badge{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer}
-.top-btn{padding:5px 11px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;white-space:nowrap}
+#topbar{background:#0a1020;border-bottom:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;flex-shrink:0;z-index:50;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#topbar h1{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;flex-shrink:0}
+#sync-badge{font-size:10px;padding:3px 7px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.top-btn{padding:5px 10px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;white-space:nowrap;flex-shrink:0}
 .top-btn:hover{background:#263650}
 .top-btn.danger{border-color:#ef4444;color:#ef4444}
 .top-btn.end{background:#14532d;border-color:#4ade80;color:#4ade80;font-weight:700}
 .top-btn.prt{background:#1e3a8a;border-color:#60a5fa;color:#60a5fa}
 .top-btn.conn{background:#0e2a1e;border-color:var(--sb);color:var(--sb)}
-#shift-name-input{background:var(--card);border:1px solid var(--border);color:#fbbf24;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:700;width:100px}
+#shift-name-input{background:var(--card);border:1px solid var(--border);color:#fbbf24;padding:4px 7px;border-radius:4px;font-size:11px;font-weight:700;width:80px;flex-shrink:0}
 
-/* ── APP: 3-column layout ── */
-#app{display:flex;flex:1;overflow:hidden;min-height:0}
+/* ── APP LAYOUT ── */
+#app{display:flex;flex:1;overflow:hidden;min-height:0;min-width:0}
 
 /* ── LEFT PANEL ── */
-#left-panel{width:220px;min-width:200px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+#left-panel{width:200px;min-width:180px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 .panel-section{padding:10px;border-bottom:1px solid var(--border)}
 .panel-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 #row-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
@@ -60,9 +60,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 #apply-btn:hover{background:#2563eb}
 #apply-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
 
-/* ── CENTRE: stacked grid + print sheet ── */
-#centre{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-#grid-area{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:4px;min-height:0}
+/* ── CENTRE: grid fills all remaining space ── */
+#centre{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
+#grid-area{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:4px;min-height:0;-webkit-overflow-scrolling:touch;width:100%}
 .section-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:2px}
 .grid-table{border-collapse:collapse;table-layout:fixed}
 .grid-table th,.grid-table td{width:26px;height:25px;text-align:center;vertical-align:middle;border:1px solid var(--border);padding:0;font-size:9px}
@@ -82,19 +82,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .tube-cell.bowed{background:var(--bowed);color:#14532d;font-weight:800}
 .tube-cell.dt{background:var(--dt);color:#451a03;font-weight:800}
 
-/* ── PRINT SHEET (below grid on screen, full page on print) ── */
+/* ── PRINT SHEET: hidden on screen, only shows on actual print ── */
 #print-sheet{
+  display:none;
   background:#fff;color:#000;
   padding:8px 10px;
-  border-top:2px solid var(--border);
-  overflow:auto;
-  flex-shrink:0;
-  max-height:40vh;
   font-family:'Segoe UI',Arial,sans-serif;
   font-size:7pt;
-  display:none; /* hidden until Print clicked */
 }
-#print-sheet.visible{display:block}
 #print-sheet .ps-title{text-align:center;font-size:9pt;font-weight:bold;margin-bottom:2mm}
 #print-sheet .ps-sub{display:flex;justify-content:space-between;font-size:6pt;color:#555;margin-bottom:2mm}
 #print-sheet table.ps-grid{border-collapse:collapse;width:100%;table-layout:fixed}
@@ -121,8 +116,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .ps-stats td{border:.4pt solid #aaa;padding:1pt 3pt;text-align:right}
 .ps-stats td:first-child{text-align:left;font-weight:bold}
 
-/* ── RIGHT PANEL ── */
-#right-panel{width:195px;min-width:175px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+/* ── RIGHT PANEL — hidden on narrow screens ── */
+#right-panel{width:185px;min-width:160px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:8px;flex-shrink:0;-webkit-overflow-scrolling:touch}
+/* Stats bar shown below grid on mobile */
+#stats-bar{display:none;background:var(--surface);border-top:1px solid var(--border);padding:6px 8px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:700px){
+  #left-panel{width:160px;min-width:140px}
+  #right-panel{display:none!important}
+  #stats-bar{display:block}
+  .stat-tbl th,.stat-tbl td{font-size:9px;padding:1px 2px}
+}
 .stat-box{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px}
 .stat-box h3{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .stat-tbl{width:100%;border-collapse:collapse;font-size:10px}
@@ -167,10 +170,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   @page{size:A4 landscape;margin:5mm}
   body{background:#fff;color:#000;height:auto;overflow:visible}
   #topbar,#left-panel,#right-panel,#toast,#conn-modal{display:none!important}
-  #app{display:block;overflow:visible}
-  #centre{display:block;overflow:visible}
+  #app{display:block!important;overflow:visible}
+  #centre{display:block!important;overflow:visible}
   #grid-area{display:none!important}
-  #print-sheet{display:block!important;max-height:none!important;overflow:visible!important;border-top:none;padding:0}
+  #print-sheet{display:block!important;overflow:visible!important;padding:0}
 }
 </style>
 </head>
@@ -247,6 +250,39 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <h3>🕑 Shift History</h3>
       <div id="hist-wrap"><span style="color:var(--muted);font-size:10px">No archived shifts yet.</span></div>
     </div>
+    <div class="stat-box" style="flex:1;display:flex;flex-direction:column">
+      <h3>📝 Shift Notes <span id="notes-status" style="font-weight:400;color:var(--muted);font-size:9px;float:right"></span></h3>
+      <textarea id="notes-ta" placeholder="Type notes visible to all users…&#10;e.g. Bay 12 access restricted&#10;Supervisor: Ahmed&#10;Safety: PPE required"
+        style="flex:1;min-height:120px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px;font-size:11px;resize:vertical;line-height:1.5"
+        oninput="onNotesInput()"
+      ></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE STATS BAR (shown below grid on small screens) -->
+<div id="stats-bar">
+  <div style="display:flex;gap:10px;align-items:flex-start;min-width:max-content">
+    <div>
+      <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">This Shift</div>
+      <table class="stat-tbl">
+        <thead><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr></thead>
+        <tbody id="cur-stats-m"></tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Cumulative</div>
+      <table class="stat-tbl">
+        <thead><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr></thead>
+        <tbody id="cum-stats-m"></tbody>
+      </table>
+    </div>
+    <div style="min-width:160px">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">📝 Notes</div>
+      <textarea id="notes-ta-m" placeholder="Shift notes…"
+        style="width:160px;height:60px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px;font-size:10px;resize:none"
+        oninput="onNotesMobileInput(this.value)"></textarea>
+    </div>
   </div>
 </div>
 
@@ -315,33 +351,37 @@ const CLRS={lifted:'var(--lifted)',replaced:'var(--replaced)',dogleg:'var(--dogl
 const INITIAL_GRID={"F-84":"lifted","F-75":"dogleg","F-74":"dogleg","F-73":"dogleg","F-72":"dogleg","F-71":"dogleg","F-70":"replaced","F-69":"replaced","F-68":"replaced","F-67":"replaced","F-66":"replaced","F-65":"lifted","F-62":"catfill","F-61":"lifted","F-59":"lifted","F-58":"lifted","F-57":"lifted","F-50":"bowed","F-49":"catfill","F-48":"catfill","F-44":"catfill","F-41":"catfill","F-38":"catfill","F-37":"catfill","F-36":"catfill","F-33":"catfill","F-32":"catfill","F-31":"catfill","F-30":"lifted","F-26":"catfill","F-25":"catfill","F-24":"catfill","F-22":"lifted","F-21":"catfill","F-20":"catfill","F-19":"lifted","F-18":"lifted","F-17":"lifted","F-16":"lifted","F-15":"catfill","F-14":"replaced","F-13":"catfill","F-12":"dogleg","F-11":"catfill","F-10":"catfill","F-9":"catfill","F-8":"dogleg","F-7":"dogleg","F-6":"dogleg","F-5":"dogleg","F-4":"dogleg","F-3":"dogleg","F-2":"dogleg","F-1":"dogleg","E-95":"lifted","E-94":"lifted","E-93":"lifted","E-92":"lifted","E-91":"lifted","E-90":"lifted","E-89":"lifted","E-88":"lifted","E-87":"lifted","E-86":"lifted","E-85":"lifted","E-84":"lifted","E-83":"lifted","E-81":"lifted","E-80":"lifted","E-79":"lifted","E-77":"lifted","E-55":"lifted","E-54":"lifted","E-53":"lifted","E-49":"catfill","E-42":"catfill","E-35":"catfill","E-34":"catfill","E-33":"catfill","E-29":"replaced","E-27":"dogleg","E-26":"catfill","E-25":"catfill","E-24":"catfill","E-23":"catfill","E-22":"catfill","E-21":"catfill","E-20":"catfill","E-19":"catfill","E-18":"catfill","E-16":"replaced","E-15":"replaced","E-14":"catfill","E-13":"replaced","E-12":"replaced","E-11":"replaced","E-10":"catfill","E-9":"lifted","E-8":"catfill","E-7":"replaced","E-6":"replaced","E-5":"catfill","E-4":"catfill","E-3":"catfill","E-2":"lifted","E-1":"lifted","D-49":"catfill","D-48":"catfill","D-41":"catfill","D-37":"catfill","D-35":"catfill","D-33":"catfill","D-31":"catfill","D-25":"dogleg","D-24":"catfill","D-23":"catfill","D-21":"catfill","D-20":"catfill","D-19":"catfill","D-18":"catfill","D-16":"catfill","D-14":"catfill","D-12":"catfill","D-9":"dogleg","D-7":"catfill","D-6":"catfill","C-51":"catfill","C-50":"catfill","C-42":"catfill","C-41":"catfill","C-35":"catfill","C-34":"catfill","C-33":"catfill","C-31":"catfill","C-22":"catfill","C-21":"catfill","C-20":"catfill","C-18":"catfill","C-17":"catfill","C-14":"catfill","C-13":"catfill","C-10":"catfill","C-8":"catfill","C-6":"catfill","B-89":"catfill","B-43":"catfill","B-35":"catfill","B-25":"catfill","B-22":"catfill","B-20":"catfill","B-19":"catfill","B-17":"catfill","B-10":"catfill","B-9":"catfill","B-5":"catfill","A-83":"catfill","A-81":"lifted","A-80":"lifted","A-79":"lifted","A-78":"lifted","A-77":"catfill","A-68":"lifted","A-67":"lifted","A-66":"lifted","A-65":"replaced","A-64":"replaced","A-63":"replaced","A-62":"replaced","A-61":"replaced","A-59":"lifted","A-42":"catfill","A-40":"lifted","A-39":"catfill","A-37":"catfill","A-35":"catfill","A-32":"lifted","A-31":"lifted","A-27":"catfill","A-25":"catfill","A-21":"catfill","A-20":"catfill","A-19":"catfill","A-18":"catfill","A-15":"catfill","A-14":"catfill","A-10":"catfill","A-9":"catfill","A-8":"catfill","A-5":"catfill"};
 
 // ── APP STATE ──
-let grid={},history=[],selRow=null,selTube=null,selStatus=null;
-let suppressRemote=false,pollTimer=null,lastTs=null;
+let grid={},history=[],notes='',selRow=null,selTube=null,selStatus=null;
+let suppressRemote=false,suppressNoteRemote=false,pollTimer=null,lastTs=null,lastNoteTs=null;
 let SB_URL='',SB_KEY='';
+
+// ── CREDENTIALS (hard-coded — no setup needed for users) ──
+const HARD_SB_URL = 'https://mgxcrrgnfoqkjcymgdny.supabase.co';
+const HARD_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1neGNycmduZm9xa2pjeW1nZG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NDU0MzUsImV4cCI6MjA5ODEyMTQzNX0.fmtFsUC2yx1xLwV0H-XhKSfwZfDhu6a0_JBAgKXpYBY';
 
 // ── INIT ──
 async function init(){
-  // Load credentials from localStorage
-  SB_URL = localStorage.getItem('hrb_sb_url')||'';
-  SB_KEY = localStorage.getItem('hrb_sb_key')||'';
-  // Pre-fill modal inputs
-  if(SB_URL) document.getElementById('inp-url').value=SB_URL;
-  if(SB_KEY) document.getElementById('inp-key').value=SB_KEY;
+  // Always use hard-coded creds; modal allows override if ever needed
+  SB_URL = HARD_SB_URL;
+  SB_KEY = HARD_SB_KEY;
+  // Also save to localStorage so modal shows them
+  localStorage.setItem('hrb_sb_url', SB_URL);
+  localStorage.setItem('hrb_sb_key', SB_KEY);
+  document.getElementById('inp-url').value = SB_URL;
+  document.getElementById('inp-key').value = SB_KEY;
   loadLocal();
+  const ntEl=document.getElementById('notes-ta');if(ntEl)ntEl.value=notes;
+  const ntElM=document.getElementById('notes-ta-m');if(ntElM)ntElM.value=notes;
   buildTubeGrid();
   buildGridTables();
   refreshStats();
   refreshApplyBtn();
-  if(SB_URL && SB_KEY){
-    await connectDB();
-  } else {
-    setBadge('🟡 Local only — click to connect DB','#fbbf24');
-  }
+  await connectDB();
 }
 
 // ── SUPABASE REST ──
 async function dbGet(){
-  const r=await fetch(SB_URL+'/rest/v1/hrb_state?id=eq.main&select=data,updated_at&limit=1',
+  const r=await fetch(SB_URL+'/rest/v1/hrb_state?id=eq.main&select=data,notes,updated_at&limit=1',
     {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}});
   if(!r.ok) throw new Error('GET '+r.status+': '+await r.text());
   const a=await r.json();
@@ -359,26 +399,42 @@ async function dbUpsert(payload){
   if(!r.ok) throw new Error('UPSERT '+r.status+': '+await r.text());
 }
 
+async function dbUpsertNotes(txt){
+  if(!SB_URL||!SB_KEY) return;
+  const r=await fetch(SB_URL+'/rest/v1/hrb_state',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json','Accept':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:'main',notes:txt,updated_at:new Date().toISOString()})
+  });
+  if(!r.ok) throw new Error('Notes UPSERT '+r.status+': '+await r.text());
+}
+
 async function connectDB(){
   setBadge('⏳ Connecting…','#fbbf24');
   try{
     const row=await dbGet();
     if(!row||!row.data||Object.keys(row.data.grid||{}).length===0){
+      // DB empty — seed with Excel initial data
       const p={grid:{...INITIAL_GRID},history:[],shiftName:document.getElementById('shift-name-input').value};
       await dbUpsert(p);
+      // Also push notes if any
+      if(notes) await dbUpsertNotes(notes);
       applyData(p);
       lastTs=new Date().toISOString();
-      showToast('✅ Excel data seeded to DB');
+      showToast('✅ Excel data loaded into DB');
     } else {
       applyData(row.data);
       lastTs=row.updated_at;
+      applyNotes(row.notes||'',row.updated_at);
     }
     setBadge('🟢 Live','#4ade80');
     startPoll();
   }catch(e){
     console.error(e);
     setBadge('🔴 DB Error — click to configure','#f87171');
-    showToast('DB Error: '+e.message,'err');
+    showToast('DB: '+e.message,'err');
   }
 }
 
@@ -388,10 +444,16 @@ function startPoll(){
     if(!SB_URL||!SB_KEY) return;
     try{
       const row=await dbGet();
-      if(row&&row.updated_at&&row.updated_at!==lastTs&&!suppressRemote){
+      if(!row) return;
+      if(row.updated_at&&row.updated_at!==lastTs&&!suppressRemote){
         lastTs=row.updated_at;
         applyData(row.data);
-        showToast('🔄 Updated by another user');
+        showToast('🔄 Grid updated by another user');
+      }
+      // Check notes separately
+      if(row.notes!==undefined&&row.notes!==notes&&!suppressNoteRemote){
+        applyNotes(row.notes,row.updated_at);
+        showToast('📝 Notes updated');
       }
     }catch(e){}
   },5000);
@@ -399,12 +461,12 @@ function startPoll(){
 
 // ── SAVE ──
 function saveLocal(){
-  localStorage.setItem('hrb_data',JSON.stringify({grid,history,shiftName:document.getElementById('shift-name-input').value}));
+  localStorage.setItem('hrb_data',JSON.stringify({grid,history,notes,shiftName:document.getElementById('shift-name-input').value}));
 }
 function loadLocal(){
   try{
     const r=localStorage.getItem('hrb_data');
-    if(r){const d=JSON.parse(r);grid=d.grid||{};history=d.history||[];if(d.shiftName)document.getElementById('shift-name-input').value=d.shiftName;}
+    if(r){const d=JSON.parse(r);grid=d.grid||{};history=d.history||[];notes=d.notes||'';if(d.shiftName)document.getElementById('shift-name-input').value=d.shiftName;}
     else{grid={...INITIAL_GRID};}
   }catch(e){grid={...INITIAL_GRID};}
 }
@@ -421,6 +483,14 @@ function applyData(data){
   grid=data.grid||{};history=data.history||[];
   if(data.shiftName)document.getElementById('shift-name-input').value=data.shiftName;
   saveLocal();buildGridTables();refreshStats();
+}
+function applyNotes(txt,ts){
+  notes=txt||'';
+  lastNoteTs=ts;
+  const el=document.getElementById('notes-ta');
+  if(el&&document.activeElement!==el) el.value=notes;
+  const em=document.getElementById('notes-ta-m');
+  if(em&&document.activeElement!==em) em.value=notes;
 }
 
 // ── SELECTORS ──
@@ -531,8 +601,13 @@ function cumulStats(){
   return calcStats(m);
 }
 function refreshStats(){
-  renderStat(calcStats(grid),'cur-stats');
-  renderStat(cumulStats(),'cum-stats');
+  const cs=calcStats(grid);
+  const cu=cumulStats();
+  renderStat(cs,'cur-stats');
+  renderStat(cu,'cum-stats');
+  // Mobile mirrors
+  if(document.getElementById('cur-stats-m')) renderStat(cs,'cur-stats-m');
+  if(document.getElementById('cum-stats-m')) renderStat(cu,'cum-stats-m');
   renderHistory();
 }
 function renderHistory(){
@@ -619,67 +694,283 @@ function setBadge(txt,color){
 // ── PRINT ──
 function doPrint(){
   buildPrintSheet();
-  document.getElementById('print-sheet').classList.add('visible');
-  setTimeout(()=>{ window.print(); },300);
+  window.print();
 }
 
 function buildPrintSheet(){
   const shiftName=document.getElementById('shift-name-input').value;
-  const stats=calcStats(grid);const cumul=cumulStats();
+  const stats=calcStats(grid);
+  const cumul=cumulStats();
+  const t=stats.total;
+
+  // Excel colors
+  const C={
+    lifted:'#f4b8d1',    // pink
+    replaced:'#9dc3e6',  // blue
+    dogleg:'#f4b942',    // orange/yellow
+    catfill:'#cc99ff',   // purple
+    bowed:'#92d050',     // green
+    dt:'#ffeb3b',        // yellow
+    headerGreen:'#92d050',
+    bayPink:'#f4b8d1',
+    rowHeader:'#d9d9d9',
+    tubeHeader:'#f2f2f2',
+    progressHeader:'#d6e4f7',
+  };
+
+  const code={lifted:'L',replaced:'R',dogleg:'DF',catfill:'CF',bowed:'RD',dt:'FSO'};
+
   let h='';
-  h+=`<div class="ps-title">Heat Recovery Boiler — Tube Maintenance Tracker</div>`;
-  h+=`<div class="ps-sub"><span>Shift: <b>${shiftName}</b></span><span>109 Tubes replaced 2022/2024 · 461 remaining 2026</span><span>${new Date().toLocaleString()}</span></div>`;
-  h+=`<table class="ps-grid"><thead>`;
-  // Bay row
-  h+=`<tr><td class="ps-corner" rowspan="2">Furnace<br>End</td><td class="ps-corner" rowspan="2">Row</td>`;
-  for(let b=19;b>=1;b--) h+=`<td class="ps-bay" colspan="5">Bay ${b}</td>`;
-  h+=`<td class="ps-endlabel" rowspan="8">Heat Recovery End</td></tr>`;
-  // Tube number row
-  h+=`<tr>`;
-  for(let t=95;t>=1;t--) h+=`<td class="ps-tubenum${t%5===0?' g5':''}">${t}</td>`;
-  h+=`</tr></thead><tbody>`;
-  // Data rows F→A
-  ['F','E','D','C','B','A'].forEach(row=>{
-    h+=`<tr><td class="ps-corner"></td><td class="ps-rowlabel">Row ${row}</td>`;
+  h+=`<style>
+    .ps-wrap{font-family:Calibri,Arial,sans-serif;font-size:7pt;color:#000;width:100%}
+    .ps-wrap table{border-collapse:collapse}
+    .ps-wrap td,.ps-wrap th{border:.5pt solid #999;text-align:center;vertical-align:middle;padding:0;height:16pt;font-size:7pt;overflow:hidden;white-space:nowrap}
+    .ps-main{width:100%;table-layout:fixed}
+    .ps-main td,.ps-main th{width:8pt}
+    .ps-lbl{width:20pt!important;font-weight:bold;font-size:7pt}
+    .ps-hdr-green{background:${C.headerGreen};font-weight:bold;font-size:8pt;height:18pt;text-align:center}
+    .ps-bay{background:${C.bayPink};font-weight:bold;font-size:7pt}
+    .ps-tubeno{background:${C.tubeHeader};font-size:6pt}
+    .ps-rowhdr{background:${C.rowHeader};font-weight:bold;width:22pt!important}
+    .ps-end{background:${C.headerGreen};font-weight:bold;writing-mode:vertical-rl;text-orientation:mixed;font-size:7pt;width:12pt!important}
+    .ps-prog-hdr{background:${C.progressHeader};font-weight:bold;font-size:7pt}
+    .c-lifted{background:${C.lifted}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-replaced{background:${C.replaced}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-dogleg{background:${C.dogleg}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-catfill{background:${C.catfill}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-bowed{background:${C.bowed}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-dt{background:${C.dt}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-section{background:${C.headerGreen};font-weight:bold;text-align:center;font-size:8pt;height:18pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-bay{background:${C.bayPink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-rowhdr{background:${C.rowHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-tubeno{background:${C.tubeHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-end{background:${C.headerGreen};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-prog-hdr{background:${C.progressHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .ps-hdr-green{background:${C.headerGreen};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  </style>`;
+
+  h+=`<div class="ps-wrap">`;
+
+  // ── MAIN GRID TABLE ──
+  // Structure: [corner][row label][tubes 95→1][end label]
+  // Tubes cols: 95 total = 8pt each
+  // Left cols: corner ~20pt, row label ~22pt
+  // Right: end label vertical ~12pt + progress table
+
+  h+=`<table class="ps-main" style="width:100%"><colgroup>
+    <col style="width:20pt"><col style="width:22pt">`;
+  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'9pt':'7.5pt'}">`;
+  h+=`<col style="width:12pt"><col style="width:55pt">`;
+  h+=`</colgroup>`;
+
+  // Row 1: CORSIBD END header (tubes 51-95 = 45 cols) | blank | Progress header
+  h+=`<tr>
+    <td colspan="2" style="border:none;background:#fff"></td>
+    <td colspan="45" class="ps-section">CORSIBD END</td>
+    <td colspan="50" style="border:none;background:#fff"></td>
+    <td rowspan="10" class="ps-end">Heat Recovery End</td>
+    <td class="ps-prog-hdr" style="font-size:7pt;text-align:center">Progress</td>
+  </tr>`;
+
+  // Row 2: Furnace End | Bay No | Bay numbers (19→1 each 5 cols) | blank progress cols
+  h+=`<tr>
+    <td rowspan="8" class="ps-rowhdr" style="background:#92d050;font-size:7pt">Furnace End</td>
+    <td class="ps-rowhdr" style="font-size:6pt">Bay No</td>`;
+  for(let b=19;b>=1;b--){
+    h+=`<td colspan="5" class="ps-bay">Bay ${b}</td>`;
+  }
+  // Progress table header row
+  h+=`<td class="ps-prog-hdr" style="font-size:6pt">Lifted&nbsp;Repl.&nbsp;Dog.&nbsp;CF&nbsp;Bowed</td>
+  </tr>`;
+
+  // Row 3: Tube numbers
+  h+=`<tr><td class="ps-rowhdr" style="font-size:6pt">Tube No</td>`;
+  for(let t=95;t>=1;t--){
+    h+=`<td class="ps-tubeno" style="${t%5===0?'font-weight:bold':''}">`;
+    h+=`${t}</td>`;
+  }
+  h+=`<td class="ps-prog-hdr" style="font-size:6pt">`;
+  // First progress data row inline
+  const pRows=['F','E','D','C','B','A'];
+  h+=`</td></tr>`;
+
+  // Data rows F→A with progress on right
+  pRows.forEach((row,idx)=>{
+    const s=stats[row]||{lifted:0,replaced:0,dogleg:0,catfill:0,bowed:0,dt:0};
+    h+=`<tr>`;
+    h+=`<td class="ps-rowhdr">Row ${row}</td>`;
     for(let t=95;t>=1;t--){
-      const state=grid[`${row}-${t}`]||'';
-      h+=`<td class="${state}">${state?CODES[state]:''}</td>`;
+      const key=`${row}-${t}`;
+      const state=grid[key]||'';
+      const cc=state?`c-${state}`:'';
+      const lbl=state?code[state]:'';
+      h+=`<td class="${cc}" style="font-size:6pt;font-weight:bold">${lbl}</td>`;
     }
-    h+=`</tr>`;
+    // Progress column
+    h+=`<td style="font-size:6pt;text-align:center;background:#f2f2f2">
+      ${s.lifted||0}&nbsp;${s.replaced||0}&nbsp;${s.dogleg||0}&nbsp;${s.catfill||0}&nbsp;${s.bowed||0}
+    </td></tr>`;
   });
-  h+=`</tbody></table>`;
-  // Legend
-  h+=`<div class="ps-legend"><b>Legend:</b>
-    <span class="ps-leg"><span class="ps-dot" style="background:#f9a8d4"></span>I=Lifted</span>
-    <span class="ps-leg"><span class="ps-dot" style="background:#93c5fd"></span>R=Replaced</span>
-    <span class="ps-leg"><span class="ps-dot" style="background:#fdba74"></span>DI=Dogleg Fixed</span>
-    <span class="ps-leg"><span class="ps-dot" style="background:#d8b4fe"></span>CF=Cat.Filled</span>
-    <span class="ps-leg"><span class="ps-dot" style="background:#86efac"></span>RD=Bowed Up</span>
-    <span class="ps-leg"><span class="ps-dot" style="background:#fde68a"></span>D&T=Dogleg &amp; Tube Repl.</span>
-  </div>`;
-  // Stats
-  h+=`<div class="ps-stats">`;
-  h+=`<table><tr><th colspan="7">${shiftName}</th></tr><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
-  ROWS.forEach(r=>{const s=stats[r];h+=`<tr><td>${r}</td><td>${s.lifted||0}</td><td>${s.replaced||0}</td><td>${s.dogleg||0}</td><td>${s.catfill||0}</td><td>${s.bowed||0}</td><td>${s.dt||0}</td></tr>`;});
-  const t=stats.total;h+=`<tr><td><b>Σ</b></td><td><b>${t.lifted}</b></td><td><b>${t.replaced}</b></td><td><b>${t.dogleg}</b></td><td><b>${t.catfill}</b></td><td><b>${t.bowed}</b></td><td><b>${t.dt}</b></td></tr></table>`;
+
+  // Total row
+  h+=`<tr><td class="ps-rowhdr" style="font-weight:bold">Total</td>`;
+  for(let t=95;t>=1;t--) h+=`<td></td>`;
+  h+=`<td style="font-size:6pt;font-weight:bold;text-align:center;background:#d6e4f7">
+    ${t.lifted}&nbsp;${t.replaced}&nbsp;${t.dogleg}&nbsp;${t.catfill}&nbsp;${t.bowed}
+  </td></tr>`;
+
+  // PG COMPRESSOR END label row
+  h+=`<tr>
+    <td colspan="2" style="border:none;background:#fff"></td>
+    <td colspan="50" class="ps-section">PG COMPRESSOR END</td>
+    <td colspan="45" style="border:none;background:#fff"></td>
+    <td style="border:none"></td>
+  </tr>`;
+
+  h+=`</table>`;
+
+  // ── BOTTOM SECTION: Legend + Info + Progress detail ──
+  h+=`<table style="width:100%;margin-top:4pt;border-collapse:collapse"><tr>`;
+
+  // Left: info box
+  h+=`<td style="vertical-align:top;width:30%;border:none;padding-right:4pt">
+    <table style="border-collapse:collapse;font-size:7pt;width:100%">
+      <tr><td colspan="2" style="background:#d9d9d9;font-weight:bold;border:.5pt solid #999;padding:1pt 3pt">109 Tubes already replaced in 2022/2024</td></tr>
+      <tr><td colspan="2" style="border:.5pt solid #999;padding:1pt 3pt">Remaining 461 tubes to be replaced in 2026</td></tr>
+    </table>
+  </td>`;
+
+  // Middle: legend
+  h+=`<td style="vertical-align:top;width:35%;border:none;padding:0 4pt">
+    <table style="border-collapse:collapse;font-size:7pt">`;
+  const legends=[
+    ['D9','Dogleg replacement'],['D25','Dogleg replacement'],
+    ['E27','Dogleg replacement'],['F50','Tube & Dogleg replacement']
+  ];
+  legends.forEach(([code2,desc])=>{
+    h+=`<tr><td style="border:.5pt solid #999;padding:1pt 4pt;font-weight:bold">${code2}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt">${desc}</td></tr>`;
+  });
+  h+=`</table></td>`;
+
+  // Right: color legend + progress summary
+  h+=`<td style="vertical-align:top;width:35%;border:none">
+    <table style="border-collapse:collapse;font-size:7pt;width:100%">
+      <tr>
+        <td style="border:.5pt solid #999;padding:1pt 3pt">
+          <span style="display:inline-block;width:10pt;height:10pt;background:${C.lifted};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> L = Lifted
+        </td>
+        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.lifted}</td>
+      </tr>
+      <tr>
+        <td style="border:.5pt solid #999;padding:1pt 3pt">
+          <span style="display:inline-block;width:10pt;height:10pt;background:${C.replaced};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> R = Replaced
+        </td>
+        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.replaced}</td>
+      </tr>
+      <tr>
+        <td style="border:.5pt solid #999;padding:1pt 3pt">
+          <span style="display:inline-block;width:10pt;height:10pt;background:${C.dogleg};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> DF = Dogleg Fixed
+        </td>
+        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.dogleg}</td>
+      </tr>
+      <tr>
+        <td style="border:.5pt solid #999;padding:1pt 3pt">
+          <span style="display:inline-block;width:10pt;height:10pt;background:${C.catfill};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> CF = Cat. Filled
+        </td>
+        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.catfill}</td>
+      </tr>
+      <tr>
+        <td style="border:.5pt solid #999;padding:1pt 3pt">
+          <span style="display:inline-block;width:10pt;height:10pt;background:${C.bowed};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> B = Bowed Up
+        </td>
+        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.bowed}</td>
+      </tr>
+    </table>
+  </td>`;
+
+  h+=`</tr></table>`;
+
+  // Previous shift table if history exists
   if(history.length){
-    const ct=cumul.total;
-    h+=`<table><tr><th colspan="7">Cumulative</th></tr><tr><th>Row</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
-    ROWS.forEach(r=>{const s=cumul[r];h+=`<tr><td>${r}</td><td>${s.lifted||0}</td><td>${s.replaced||0}</td><td>${s.dogleg||0}</td><td>${s.catfill||0}</td><td>${s.bowed||0}</td><td>${s.dt||0}</td></tr>`;});
-    h+=`<tr><td><b>Σ</b></td><td><b>${ct.lifted}</b></td><td><b>${ct.replaced}</b></td><td><b>${ct.dogleg}</b></td><td><b>${ct.catfill}</b></td><td><b>${ct.bowed}</b></td><td><b>${ct.dt}</b></td></tr>`;
-    h+=`<tr><th colspan="7">Shift History</th></tr><tr><th>Shift</th><th>I</th><th>R</th><th>DI</th><th>CF</th><th>RD</th><th>D&T</th></tr>`;
-    history.forEach(sh=>{const s=sh.stats.total;h+=`<tr><td>${sh.name}</td><td>${s.lifted}</td><td>${s.replaced}</td><td>${s.dogleg}</td><td>${s.catfill}</td><td>${s.bowed}</td><td>${s.dt}</td></tr>`;});
+    h+=`<table style="margin-top:4pt;border-collapse:collapse;font-size:7pt">
+      <tr><th colspan="6" class="ps-prog-hdr" style="padding:2pt 4pt;border:.5pt solid #999">Previous Shifts</th></tr>
+      <tr>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">Shift</th>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">Lifted</th>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">Replaced</th>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">Dogleg</th>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">CF</th>
+        <th style="border:.5pt solid #999;padding:1pt 4pt">Bowed</th>
+      </tr>`;
+    history.forEach(sh=>{
+      const s=sh.stats.total;
+      h+=`<tr>
+        <td style="border:.5pt solid #999;padding:1pt 4pt">${sh.name}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.lifted}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.replaced}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.dogleg}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.catfill}</td>
+        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.bowed}</td>
+      </tr>`;
+    });
     h+=`</table>`;
   }
-  h+=`</div>`;
+
+  // Shift notes
+  if(notes){
+    h+=`<div style="margin-top:4pt;font-size:7pt;border:.5pt solid #999;padding:3pt 5pt">
+      <b>Shift Notes:</b> ${notes.replace(/\n/g,'<br>')}
+    </div>`;
+  }
+
+  h+=`</div>`; // ps-wrap
+
   document.getElementById('print-sheet').innerHTML=h;
 }
+
 
 // ── TOAST ──
 function showToast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.background=type==='err'?'#7f1d1d':'#1d4ed8';
   t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+
+// ── NOTES ──
+let notesSaveTimer=null;
+function onNotesMobileInput(val){
+  const el=document.getElementById('notes-ta');
+  if(el) el.value=val;
+  notes=val;
+  document.getElementById('notes-status')&&(document.getElementById('notes-status').textContent='saving…');
+  clearTimeout(notesSaveTimer);
+  notesSaveTimer=setTimeout(saveNotes,1500);
+}
+function onNotesInput(){
+  notes=document.getElementById('notes-ta').value;
+  document.getElementById('notes-status').textContent='saving…';
+  // Debounce: save 1.5s after user stops typing
+  clearTimeout(notesSaveTimer);
+  notesSaveTimer=setTimeout(saveNotes,1500);
+}
+async function saveNotes(){
+  saveLocal();
+  if(!SB_URL||!SB_KEY){
+    document.getElementById('notes-status').textContent='saved locally';
+    return;
+  }
+  suppressNoteRemote=true;
+  try{
+    await dbUpsertNotes(notes);
+    lastNoteTs=new Date().toISOString();
+    document.getElementById('notes-status').textContent='✅ saved';
+    setTimeout(()=>{ document.getElementById('notes-status').textContent=''; },2000);
+  }catch(e){
+    document.getElementById('notes-status').textContent='⚠️ offline';
+  }
+  setTimeout(()=>suppressNoteRemote=false,2000);
 }
 
 init();
