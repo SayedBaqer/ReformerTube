@@ -300,92 +300,113 @@ function saveLocal(payload){
 }
 
 // ─────────────────────────────────────────────
-// SUPABASE — credentials hard-coded
+// SUPABASE — simple polling, no SDK, no WebSocket
+// Works on Safari iOS, Chrome, Firefox — everything
 // ─────────────────────────────────────────────
 const SB_URL = 'https://mgxcrrgnfoqkjcymgdny.supabase.co';
-const SB_KEY = 'sb_publishable_sYk9WRgxNfjBJQJgw3UiFA_poz3nV6L';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1neGNycmduZm9xa2pjeW1nZG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NDU0MzUsImV4cCI6MjA5ODEyMTQzNX0.fmtFsUC2yx1xLwV0H-XhKSfwZfDhu6a0_JBAgKXpYBY';
+
+let pollTimer = null;
+let lastUpdatedAt = null;
+
+function sbHeaders(extra){
+  return Object.assign({
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }, extra || {});
+}
+
+async function sbFetch(path, opts){
+  const r = await fetch(SB_URL + path, Object.assign({ mode:'cors' }, opts,
+    { headers: sbHeaders(opts && opts.headers) }));
+  const txt = await r.text();
+  if(!r.ok) throw new Error(r.status + ' ' + txt);
+  return txt ? JSON.parse(txt) : null;
+}
+
+async function sbRead(){
+  const arr = await sbFetch('/rest/v1/hrb_state?id=eq.main&select=data,updated_at&limit=1');
+  if(arr && arr.length) return arr[0];
+  return null;
+}
+
+async function sbWrite(payload){
+  await sbFetch('/rest/v1/hrb_state', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ id:'main', data: payload, updated_at: new Date().toISOString() })
+  });
+}
 
 async function initSupabase(){
-  const url = localStorage.getItem('hrb_sb_url') || SB_URL;
-  const key = localStorage.getItem('hrb_sb_key') || SB_KEY;
+  localStorage.removeItem('hrb_sb_url');
+  localStorage.removeItem('hrb_sb_key');
   setBadge('⏳ Connecting…','#fbbf24');
   try{
-    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
-    sbClient = supabase.createClient(url, key);
-
-    // Fetch current state from DB
-    const {data, error} = await sbClient.from('hrb_state').select('data').eq('id','main').single();
-
-    if(error && (error.code === 'PGRST116' || error.message.includes('0 rows'))){
-      // Row does not exist yet — seed with Excel initial data
-      await seedInitialData();
-    } else if(error){
-      throw error;
-    } else if(data && data.data){
-      const remote = data.data;
-      if(!remote.grid || Object.keys(remote.grid).length === 0){
-        await seedInitialData();
-      } else {
-        applyData(remote);
-      }
+    const row = await sbRead();
+    if(!row || !row.data || Object.keys(row.data.grid||{}).length === 0){
+      // Seed with Excel initial data
+      const payload = { grid:{...INITIAL_GRID}, history:[], shiftName: document.getElementById('shift-name-input').value };
+      await sbWrite(payload);
+      applyData(payload);
+      lastUpdatedAt = new Date().toISOString();
+      showToast('✅ Excel data loaded','info');
+    } else {
+      applyData(row.data);
+      lastUpdatedAt = row.updated_at;
     }
-
-    // Subscribe to real-time changes
-    sbChannel = sbClient
-      .channel('hrb-live')
-      .on('postgres_changes',
-        {event:'UPDATE', schema:'public', table:'hrb_state', filter:'id=eq.main'},
-        (payload)=>{
-          if(suppressRemote) return;
-          if(payload.new && payload.new.data){
-            applyData(payload.new.data);
-            showToast('Synced from remote','info');
-          }
-        }
-      )
-      .subscribe((status)=>{
-        if(status==='SUBSCRIBED'){
-          setBadge('Live Sync ON','#4ade80');
-        } else if(status==='CHANNEL_ERROR'){
-          setBadge('Sync Error','#f87171');
-        }
-      });
-
+    setBadge('🟢 Live (polling)','#4ade80');
+    startPolling();
   }catch(e){
     console.error('Supabase error:',e);
-    setBadge('DB Error','#f87171');
-    showToast('Supabase: '+e.message,'err');
+    setBadge('🔴 DB Error — offline mode','#f87171');
+    showToast('Offline: '+e.message,'err');
     grid = loadInitialDataIfEmpty(grid);
     buildGridTables();
     refreshStats();
   }
 }
 
-async function seedInitialData(){
-  const shiftName = document.getElementById('shift-name-input').value;
-  const payload = { grid: {...INITIAL_GRID}, history: [], shiftName };
-  try{
-    await sbClient.from('hrb_state').upsert({
-      id: 'main', data: payload, updated_at: new Date().toISOString()
-    });
-    applyData(payload);
-    showToast('Initial data loaded from Excel','info');
-  }catch(e){
-    console.error('Seed error:',e);
-    applyData(payload);
-  }
+function startPolling(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async ()=>{
+    try{
+      const row = await sbRead();
+      if(!row) return;
+      // Only apply if remote is newer than what we last wrote
+      if(row.updated_at && row.updated_at !== lastUpdatedAt){
+        lastUpdatedAt = row.updated_at;
+        if(!suppressRemote && row.data){
+          applyData(row.data);
+          showToast('🔄 Updated from another user','info');
+        }
+      }
+    }catch(e){ /* silent fail on poll — badge stays green */ }
+  }, 5000); // poll every 5 seconds
 }
 
 async function pushToSupabase(payload){
-  if(!sbClient) return;
-  suppressRemote=true;
+  suppressRemote = true;
   try{
-    await sbClient.from('hrb_state').update({data:payload,updated_at:new Date().toISOString()}).eq('id','main');
+    const ts = new Date().toISOString();
+    await sbWrite(payload);
+    lastUpdatedAt = ts;
   }catch(e){
-    console.warn('Push error:',e);
+    console.warn('Push failed:',e);
+    setBadge('🟡 Sync warning','#fbbf24');
   }
-  setTimeout(()=>suppressRemote=false, 1000);
+  setTimeout(()=>{ suppressRemote = false; }, 2000);
 }
+
+async function seedInitialData(){
+  const payload = { grid:{...INITIAL_GRID}, history:[], shiftName: document.getElementById('shift-name-input').value };
+  await sbWrite(payload);
+  applyData(payload);
+}
+
+// pushToSupabase is now defined in the Supabase polling block above
 
 function applyData(data){
   grid=data.grid||{};
@@ -394,14 +415,6 @@ function applyData(data){
   saveLocal(data);
   buildGridTables();
   refreshStats();
-}
-
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    if(document.querySelector(`script[src="${src}"]`)){res();return;}
-    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;
-    document.head.appendChild(s);
-  });
 }
 
 function setBadge(txt,color){
