@@ -703,50 +703,77 @@ function buildPrintSheet(){
   const cumul=cumulStats();
   const t=stats.total;
 
-  // Excel colors
-  const C={
-    lifted:'#f4b8d1',    // pink
-    replaced:'#9dc3e6',  // blue
-    dogleg:'#f4b942',    // orange/yellow
-    catfill:'#cc99ff',   // purple
-    bowed:'#92d050',     // green
-    dt:'#ffeb3b',        // yellow
-    headerGreen:'#92d050',
-    bayPink:'#f4b8d1',
-    rowHeader:'#d9d9d9',
-    tubeHeader:'#f2f2f2',
-    progressHeader:'#d6e4f7',
+  // Excel colors — all aligned
+  const C = {
+    lifted       : '#F4B8D1',  // pink         (L)
+    replaced     : '#2E75B6',  // dark blue     (R)  → white text
+    dogleg       : '#F4B942',  // orange        (DF)
+    catfill      : '#9966CC',  // purple        (CF) → white text
+    bowed        : '#92D050',  // green         (RD)
+    dt           : '#FFD966',  // yellow        (FSO)
+    headerGreen  : '#92D050',  // section bar
+    bayPink      : '#F4B8D1',  // bay number row
+    rowHeader    : '#D9D9D9',  // row A-F label
+    tubeHeader   : '#F2F2F2',  // tube number row
+    progressHeader: '#D6E4F7', // progress col header
   };
 
-  const code={lifted:'L',replaced:'R',dogleg:'DF',catfill:'CF',bowed:'RD',dt:'FSO'};
+  const code = { lifted:'L', replaced:'R', dogleg:'DF', catfill:'CF', bowed:'RD', dt:'FSO' };
 
   let h='';
   h+=`<style>
-    .ps-wrap{font-family:Calibri,Arial,sans-serif;font-size:7pt;color:#000;width:100%}
-    .ps-wrap table{border-collapse:collapse}
-    .ps-wrap td,.ps-wrap th{border:.5pt solid #999;text-align:center;vertical-align:middle;padding:0;height:16pt;font-size:7pt;overflow:hidden;white-space:nowrap}
-    .ps-main{width:100%;table-layout:fixed}
-    .ps-main td,.ps-main th{width:8pt}
-    .ps-lbl{width:20pt!important;font-weight:bold;font-size:7pt}
-    .ps-hdr-green{background:${C.headerGreen};font-weight:bold;font-size:8pt;height:18pt;text-align:center}
-    .ps-bay{background:${C.bayPink};font-weight:bold;font-size:7pt}
-    .ps-tubeno{background:${C.tubeHeader};font-size:6pt}
-    .ps-rowhdr{background:${C.rowHeader};font-weight:bold;width:22pt!important}
-    .ps-end{background:${C.headerGreen};font-weight:bold;writing-mode:vertical-rl;text-orientation:mixed;font-size:7pt;width:12pt!important}
-    .ps-prog-hdr{background:${C.progressHeader};font-weight:bold;font-size:7pt}
-    .c-lifted{background:${C.lifted}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .c-replaced{background:${C.replaced}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .c-dogleg{background:${C.dogleg}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .c-catfill{background:${C.catfill}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .c-bowed{background:${C.bowed}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .c-dt{background:${C.dt}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-section{background:${C.headerGreen};font-weight:bold;text-align:center;font-size:8pt;height:18pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-bay{background:${C.bayPink};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-rowhdr{background:${C.rowHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-tubeno{background:${C.tubeHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-end{background:${C.headerGreen};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-prog-hdr{background:${C.progressHeader};-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .ps-hdr-green{background:${C.headerGreen};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    /* ── base ── */
+    .ps-wrap        { font-family:Calibri,Arial,sans-serif; font-size:7pt; color:#000; width:100%; }
+    .ps-wrap table  { border-collapse:collapse; }
+    .ps-wrap td,
+    .ps-wrap th     { border:.6pt solid #666; text-align:center; vertical-align:middle;
+                      padding:0; height:16pt; font-size:7pt; overflow:hidden; white-space:nowrap; }
+
+    /* ── main grid columns ── */
+    .ps-main        { width:100%; table-layout:fixed; }
+    .ps-main td,
+    .ps-main th     { width:9pt; }
+
+    /* ── structural cells ── */
+    .ps-lbl         { width:20pt !important; font-weight:bold; font-size:7pt; }
+    .ps-rowhdr      { width:24pt !important; font-weight:bold;
+                      background:${C.rowHeader};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ps-end         { width:13pt !important; font-weight:bold; font-size:6pt;
+                      writing-mode:vertical-rl; text-orientation:mixed;
+                      background:${C.headerGreen};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+    /* ── header rows ── */
+    .ps-section     { font-weight:bold; font-size:8pt; height:18pt; text-align:center;
+                      background:${C.headerGreen};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ps-hdr-green   { font-weight:bold; font-size:8pt; height:18pt;
+                      background:${C.headerGreen};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ps-bay         { font-weight:bold; font-size:7pt;
+                      background:${C.bayPink};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ps-tubeno      { font-size:6pt;
+                      background:${C.tubeHeader};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ps-prog-hdr    { font-weight:bold; font-size:7pt;
+                      background:${C.progressHeader};
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+    /* ── state colors — all white text for contrast ── */
+    .c-lifted       { background:${C.lifted}  !important; color:#000;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .c-replaced     { background:${C.replaced}!important; color:#fff;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .c-dogleg       { background:${C.dogleg}  !important; color:#000;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .c-catfill      { background:${C.catfill} !important; color:#fff;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .c-bowed        { background:${C.bowed}   !important; color:#000;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .c-dt           { background:${C.dt}      !important; color:#000;
+                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   </style>`;
 
   h+=`<div class="ps-wrap">`;
@@ -758,9 +785,9 @@ function buildPrintSheet(){
   // Right: end label vertical ~12pt + progress table
 
   h+=`<table class="ps-main" style="width:100%"><colgroup>
-    <col style="width:20pt"><col style="width:22pt">`;
-  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'9pt':'7.5pt'}">`;
-  h+=`<col style="width:12pt"><col style="width:55pt">`;
+    <col style="width:22pt"><col style="width:26pt">`;
+  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'9.5pt':'8pt'}">`;
+  h+=`<col style="width:14pt"><col style="width:60pt">`;
   h+=`</colgroup>`;
 
   // Row 1: CORSIBD END header (tubes 51-95 = 45 cols) | blank | Progress header
