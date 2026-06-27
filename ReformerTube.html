@@ -167,14 +167,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 
 /* ── PRINT ── */
 @media print{
-  @page{size:A4 landscape;margin:5mm}
-  body{background:#fff!important;color:#000;height:auto;overflow:visible}
-  #topbar,#left-panel,#right-panel,#toast,#conn-modal,
-  #stats-bar,#grid-area{display:none!important}
-  #app{display:block!important;overflow:visible;background:#fff!important}
-  #centre{display:block!important;overflow:visible;background:#fff!important}
-  #print-sheet{display:block!important;overflow:visible!important;padding:0;background:#fff!important}
-  * {-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{ size:A4 landscape; margin:6mm; }
+  /* Hide absolutely everything first */
+  body > *                    { display:none !important; }
+  /* Then show only print-sheet */
+  #print-sheet                { display:block !important; }
+  /* Force white background everywhere */
+  html, body, #print-sheet   { background:#fff !important; color:#000 !important; }
+  body                        { height:auto; overflow:visible; }
+  -webkit-print-color-adjust  : exact;
+  print-color-adjust          : exact;
 }
 </style>
 </head>
@@ -695,265 +697,288 @@ function setBadge(txt,color){
 // ── PRINT ──
 function doPrint(){
   buildPrintSheet();
-  window.print();
+  // Open in new window to avoid dark app CSS contaminating print
+  const content = document.getElementById('print-sheet').innerHTML;
+  const win = window.open('','_blank','width=1200,height=800');
+  win.document.write(content);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>{ win.print(); }, 600);
 }
 
 function buildPrintSheet(){
-  const shiftName=document.getElementById('shift-name-input').value;
-  const stats=calcStats(grid);
-  const cumul=cumulStats();
-  const t=stats.total;
+  const shiftName = document.getElementById('shift-name-input').value;
+  const stats     = calcStats(grid);
+  const cumul     = cumulStats();
+  const tot       = stats.total;
 
-  // Excel colors — all aligned
-  const C = {
-    lifted       : '#F4B8D1',  // pink         (L)
-    replaced     : '#2E75B6',  // dark blue     (R)  → white text
-    dogleg       : '#F4B942',  // orange        (DF)
-    catfill      : '#9966CC',  // purple        (CF) → white text
-    bowed        : '#92D050',  // green         (RD)
-    dt           : '#FFD966',  // yellow        (FSO)
-    headerGreen  : '#92D050',  // section bar
-    bayPink      : '#F4B8D1',  // bay number row
-    rowHeader    : '#D9D9D9',  // row A-F label
-    tubeHeader   : '#F2F2F2',  // tube number row
-    progressHeader: '#D6E4F7', // progress col header
+  // ── colours matching Excel exactly ──
+  const BG = {
+    lifted  : '#F4B8D1',
+    replaced: '#2E75B6',
+    dogleg  : '#F4B942',
+    catfill : '#CC99FF',
+    bowed   : '#92D050',
+    dt      : '#FFD966',
   };
+  const FG = {
+    lifted  : '#000',
+    replaced: '#fff',
+    dogleg  : '#000',
+    catfill : '#fff',
+    bowed   : '#000',
+    dt      : '#000',
+  };
+  const CODE = { lifted:'L', replaced:'R', dogleg:'DF', catfill:'CF', bowed:'RD', dt:'FSO' };
 
-  const code = { lifted:'L', replaced:'R', dogleg:'DF', catfill:'CF', bowed:'RD', dt:'FSO' };
-
-  let h='';
-  h+=`<style>
-    /* ── base ── */
-    .ps-wrap        { font-family:Calibri,Arial,sans-serif; font-size:7pt; color:#000; width:100%; }
-    .ps-wrap table  { border-collapse:collapse; }
-    .ps-wrap td,
-    .ps-wrap th     { border:.6pt solid #555; text-align:center; vertical-align:middle;
-                      padding:1pt; height:18pt; font-size:8pt; overflow:hidden; white-space:nowrap; }
-
-    /* ── main grid columns ── */
-    .ps-main        { width:100%; table-layout:fixed; }
-    .ps-main td,
-    .ps-main th     { width:9pt; }
-
-    /* ── structural cells ── */
-    .ps-lbl         { width:20pt !important; font-weight:bold; font-size:7pt; }
-    .ps-rowhdr      { width:24pt !important; font-weight:bold;
-                      background:${C.rowHeader};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .ps-end         { width:13pt !important; font-weight:bold; font-size:6pt;
-                      writing-mode:vertical-rl; text-orientation:mixed;
-                      background:${C.headerGreen};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-
-    /* ── header rows ── */
-    .ps-section     { font-weight:bold; font-size:8pt; height:18pt; text-align:center;
-                      background:${C.headerGreen};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .ps-hdr-green   { font-weight:bold; font-size:8pt; height:18pt;
-                      background:${C.headerGreen};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .ps-bay         { font-weight:bold; font-size:7pt;
-                      background:${C.bayPink};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .ps-tubeno      { font-size:6pt;
-                      background:${C.tubeHeader};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .ps-prog-hdr    { font-weight:bold; font-size:7pt;
-                      background:${C.progressHeader};
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-
-    /* ── state colors — all white text for contrast ── */
-    .c-lifted       { background:${C.lifted}  !important; color:#000;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .c-replaced     { background:${C.replaced}!important; color:#fff;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .c-dogleg       { background:${C.dogleg}  !important; color:#000;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .c-catfill      { background:${C.catfill} !important; color:#fff;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .c-bowed        { background:${C.bowed}   !important; color:#000;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .c-dt           { background:${C.dt}      !important; color:#000;
-                      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  </style>`;
-
-  h+=`<div class="ps-wrap">`;
-
-  // ── MAIN GRID TABLE ──
-  // Structure: [corner][row label][tubes 95→1][end label]
-  // Tubes cols: 95 total = 8pt each
-  // Left cols: corner ~20pt, row label ~22pt
-  // Right: end label vertical ~12pt + progress table
-
-  h+=`<table class="ps-main" style="width:100%"><colgroup>
-    <col style="width:28pt"><col style="width:30pt">`;
-  for(let t=95;t>=1;t--) h+=`<col style="width:${t%5===0?'12pt':'10pt'}">`;
-  h+=`<col style="width:16pt"><col style="width:70pt">`;
-  h+=`</colgroup>`;
-
-  // Row 1: CORSIBD END header (tubes 51-95 = 45 cols) | blank | Progress header
-  h+=`<tr>
-    <td colspan="2" style="border:none;background:#fff"></td>
-    <td colspan="45" class="ps-section">CORSIBD END</td>
-    <td colspan="50" style="border:none;background:#fff"></td>
-    <td rowspan="10" class="ps-end">Heat Recovery End</td>
-    <td class="ps-prog-hdr" style="font-size:7pt;text-align:center">Progress</td>
-  </tr>`;
-
-  // Row 2: Furnace End | Bay No | Bay numbers (19→1 each 5 cols) | blank progress cols
-  h+=`<tr>
-    <td rowspan="8" class="ps-rowhdr" style="background:#92d050;font-size:7pt">Furnace End</td>
-    <td class="ps-rowhdr" style="font-size:6pt">Bay No</td>`;
-  for(let b=19;b>=1;b--){
-    h+=`<td colspan="5" class="ps-bay">Bay ${b}</td>`;
+  // helper: coloured td
+  function td(state, extra=''){
+    if(!state) return `<td style="border:.5pt solid #888;${extra}"></td>`;
+    return `<td style="background:${BG[state]};color:${FG[state]};font-weight:bold;border:.5pt solid #888;${extra}">${CODE[state]}</td>`;
   }
-  // Progress table header row
-  h+=`<td class="ps-prog-hdr" style="font-size:6pt">Lifted&nbsp;Repl.&nbsp;Dog.&nbsp;CF&nbsp;Bowed</td>
-  </tr>`;
+  function hdr(txt, bg='#D9D9D9', extra=''){
+    return `<td style="background:${bg};font-weight:bold;border:.5pt solid #888;${extra}">${txt}</td>`;
+  }
 
-  // Row 3: Tube numbers
-  h+=`<tr><td class="ps-rowhdr" style="font-size:6pt">Tube No</td>`;
+  // Column widths: label=32pt, each tube=10pt (wider every 5th =13pt)
+  // 95 tubes → approx 95*10.5=997pt — will scale via table width 100%
+  // Use percentage: label cols ~2.5%, each tube ~0.9%
+
+  let h = `
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  *    { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#fff; color:#000;
+         font-family:Calibri,Arial,sans-serif; font-size:7pt; }
+
+  table.main {
+    width:100%; border-collapse:collapse; table-layout:fixed;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  table.main td, table.main th {
+    border:.5pt solid #888; text-align:center; vertical-align:middle;
+    padding:1pt 0; height:17pt; font-size:7pt; overflow:hidden; white-space:nowrap;
+  }
+  .sec   { background:#92D050; font-weight:bold; font-size:8pt; height:19pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .bay   { background:#F4B8D1; font-weight:bold;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .tnum  { background:#F2F2F2; font-size:6pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .rlbl  { background:#D9D9D9; font-weight:bold; text-align:left; padding-left:2pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fend  { background:#92D050; font-weight:bold; font-size:7pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .hend  { background:#92D050; font-weight:bold; font-size:6pt;
+           writing-mode:vertical-rl; text-orientation:mixed;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .prog  { background:#D6E4F7; font-size:6.5pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .progv { background:#EEF4FF; font-size:6.5pt; }
+  .pghdr { background:#D6E4F7; font-weight:bold; font-size:6.5pt;
+           -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* state colours */
+  .s-lifted   { background:#F4B8D1; color:#000; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .s-replaced { background:#2E75B6; color:#fff; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .s-dogleg   { background:#F4B942; color:#000; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .s-catfill  { background:#CC99FF; color:#fff; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .s-bowed    { background:#92D050; color:#000; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .s-dt       { background:#FFD966; color:#000; font-weight:bold;
+                -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  table.bottom { border-collapse:collapse; width:100%; margin-top:4pt; }
+  table.bottom td, table.bottom th {
+    border:.5pt solid #888; padding:1.5pt 4pt; font-size:7pt; vertical-align:middle;
+  }
+  .leg-dot { display:inline-block; width:9pt; height:9pt; border:.5pt solid #888;
+             vertical-align:middle; margin-right:2pt;
+             -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+</style>
+</head><body>`;
+
+  // ── col widths ──
+  // col 0: furnace end label (narrow vertical)
+  // col 1: row label
+  // cols 2-96: tube 95 down to 1
+  // col 97: heat recovery end (vertical)
+  // col 98: progress numbers
+  h += `<table class="main"><colgroup>
+    <col style="width:1.8%">
+    <col style="width:2.2%">`;
   for(let t=95;t>=1;t--){
-    h+=`<td class="ps-tubeno" style="${t%5===0?'font-weight:bold':''}">`;
-    h+=`${t}</td>`;
+    h += `<col style="width:${t%5===0?'1.2%':'0.88%'}">`;
   }
-  h+=`<td class="ps-prog-hdr" style="font-size:6pt">`;
-  // First progress data row inline
-  const pRows=['F','E','D','C','B','A'];
-  h+=`</td></tr>`;
+  h += `<col style="width:1.2%">
+    <col style="width:5.5%">
+  </colgroup>`;
 
-  // Data rows F→A with progress on right
-  pRows.forEach((row,idx)=>{
-    const s=stats[row]||{lifted:0,replaced:0,dogleg:0,catfill:0,bowed:0,dt:0};
-    h+=`<tr>`;
-    h+=`<td class="ps-rowhdr">Row ${row}</td>`;
+  // ── ROW 1: CORSIBD END header (tubes 51-95 = cols 3 to 47 = 45 tubes) ──
+  h += `<tr>
+    <td rowspan="9" class="fend" style="writing-mode:vertical-rl;text-orientation:mixed;font-size:6pt">Furnace End</td>
+    <td rowspan="2" class="rlbl" style="font-size:6pt">Bay<br>No</td>
+    <td colspan="45" class="sec">CORSIBD END</td>
+    <td colspan="50" style="border:none;background:#fff"></td>
+    <td rowspan="9" class="hend">Heat Recovery End</td>
+    <td class="pghdr">Progress</td>
+  </tr>`;
+
+  // ── ROW 2: Bay numbers ──
+  h += `<tr>`;
+  for(let b=19;b>=1;b--){
+    h += `<td colspan="5" class="bay">Bay ${b}</td>`;
+  }
+  h += `<td class="pghdr" style="font-size:6pt">I&nbsp;R&nbsp;DF&nbsp;CF&nbsp;RD</td>
+  </tr>`;
+
+  // ── ROW 3: Tube numbers ──
+  h += `<tr>
+    <td class="rlbl" style="font-size:6pt">Tube No</td>`;
+  for(let t=95;t>=1;t--){
+    h += `<td class="tnum" style="${t%5===0?'font-weight:bold;background:#DCE6F1':''}">${t}</td>`;
+  }
+  h += `<td class="pghdr" style="font-size:6pt">I&nbsp;R&nbsp;DF&nbsp;CF&nbsp;RD</td>
+  </tr>`;
+
+  // ── ROWS 4-9: Data rows F→A ──
+  ['F','E','D','C','B','A'].forEach(row => {
+    const s = stats[row] || {lifted:0,replaced:0,dogleg:0,catfill:0,bowed:0,dt:0};
+    h += `<tr>
+      <td class="rlbl">Row ${row}</td>`;
     for(let t=95;t>=1;t--){
-      const key=`${row}-${t}`;
-      const state=grid[key]||'';
-      const cc=state?`c-${state}`:'';
-      const lbl=state?code[state]:'';
-      h+=`<td class="${cc}" style="font-size:6pt;font-weight:bold">${lbl}</td>`;
+      const key   = `${row}-${t}`;
+      const state = grid[key] || '';
+      if(state){
+        h += `<td class="s-${state}">${CODE[state]}</td>`;
+      } else {
+        h += `<td></td>`;
+      }
     }
-    // Progress column
-    h+=`<td style="font-size:7pt;text-align:center;background:#f0f4ff;font-weight:bold;padding:1pt 2pt">
-      ${[s.lifted||0,s.replaced||0,s.dogleg||0,s.catfill||0,s.bowed||0].join(' ')}
+    h += `<td class="progv" style="font-weight:bold">
+      ${s.lifted||0}&nbsp;${s.replaced||0}&nbsp;${s.dogleg||0}&nbsp;${s.catfill||0}&nbsp;${s.bowed||0}
     </td></tr>`;
   });
 
-  // Total row
-  h+=`<tr><td class="ps-rowhdr" style="font-weight:bold;background:#d9d9d9">Total</td>`;
-  for(let t2=95;t2>=1;t2--) h+=`<td style="background:#f9f9f9"></td>`;
-  h+=`<td style="font-size:7pt;font-weight:bold;text-align:center;background:#d6e4f7;padding:1pt 2pt">
-    ${t.lifted} ${t.replaced} ${t.dogleg} ${t.catfill} ${t.bowed}
+  // ── Total row ──
+  h += `<tr>
+    <td class="rlbl" style="font-weight:bold">Total</td>`;
+  for(let t=95;t>=1;t--) h += `<td style="background:#FAFAFA"></td>`;
+  h += `<td class="prog" style="font-weight:bold">
+    ${tot.lifted}&nbsp;${tot.replaced}&nbsp;${tot.dogleg}&nbsp;${tot.catfill}&nbsp;${tot.bowed}
   </td></tr>`;
 
-  // PG COMPRESSOR END label row
-  h+=`<tr>
+  // ── PG COMPRESSOR END label ──
+  h += `<tr>
+    <td class="rlbl" style="font-size:6pt">Tube No</td>`;
+  for(let t=95;t>=1;t--){
+    h += `<td style="background:#fff;border:.3pt solid #ccc;font-size:5pt;color:#aaa">${t<=50?t:''}</td>`;
+  }
+  h += `<td style="background:#fff"></td></tr>`;
+
+  h += `<tr>
     <td colspan="2" style="border:none;background:#fff"></td>
-    <td colspan="50" class="ps-section">PG COMPRESSOR END</td>
+    <td colspan="50" class="sec">PG COMPRESSOR END</td>
     <td colspan="45" style="border:none;background:#fff"></td>
-    <td style="border:none"></td>
+    <td style="border:none;background:#fff"></td>
   </tr>`;
 
-  h+=`</table>`;
+  h += `</table>`;
 
-  // ── BOTTOM SECTION: Legend + Info + Progress detail ──
-  h+=`<table style="width:100%;margin-top:4pt;border-collapse:collapse"><tr>`;
+  // ── BOTTOM: info + legend + counts ──
+  h += `<table class="bottom" style="margin-top:5pt"><tr>`;
 
-  // Left: info box
-  h+=`<td style="vertical-align:top;width:30%;border:none;padding-right:4pt">
-    <table style="border-collapse:collapse;font-size:7pt;width:100%">
-      <tr><td colspan="2" style="background:#d9d9d9;font-weight:bold;border:.5pt solid #999;padding:1pt 3pt">109 Tubes already replaced in 2022/2024</td></tr>
-      <tr><td colspan="2" style="border:.5pt solid #999;padding:1pt 3pt">Remaining 461 tubes to be replaced in 2026</td></tr>
+  // Info box
+  h += `<td style="width:28%;vertical-align:top;border:none;padding-right:6pt">
+    <table style="border-collapse:collapse;width:100%">
+      <tr><td style="border:.5pt solid #888;padding:2pt 4pt;background:#D9D9D9;font-weight:bold;font-size:7pt" colspan="2">
+        109 Tubes already replaced in 2022/2024
+      </td></tr>
+      <tr><td style="border:.5pt solid #888;padding:2pt 4pt;font-size:7pt" colspan="2">
+        Remaining 461 tubes to be replaced in 2026
+      </td></tr>
     </table>
   </td>`;
 
-  // Middle: legend
-  h+=`<td style="vertical-align:top;width:35%;border:none;padding:0 4pt">
-    <table style="border-collapse:collapse;font-size:7pt">`;
-  const legends=[
-    ['D9','Dogleg replacement'],['D25','Dogleg replacement'],
-    ['E27','Dogleg replacement'],['F50','Tube & Dogleg replacement']
-  ];
-  legends.forEach(([code2,desc])=>{
-    h+=`<tr><td style="border:.5pt solid #999;padding:1pt 4pt;font-weight:bold">${code2}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt">${desc}</td></tr>`;
+  // Dogleg legend
+  h += `<td style="width:30%;vertical-align:top;border:none;padding-right:6pt">
+    <table style="border-collapse:collapse;width:100%">`;
+  [['D9','Dogleg replacement'],['D25','Dogleg replacement'],
+   ['E27','Dogleg replacement'],['F50','Tube & Dogleg replacement']].forEach(([c,d])=>{
+    h += `<tr>
+      <td style="border:.5pt solid #888;padding:2pt 4pt;font-weight:bold;font-size:7pt;width:30pt">${c}</td>
+      <td style="border:.5pt solid #888;padding:2pt 4pt;font-size:7pt">${d}</td>
+    </tr>`;
   });
-  h+=`</table></td>`;
+  h += `</table></td>`;
 
-  // Right: color legend + progress summary
-  h+=`<td style="vertical-align:top;width:35%;border:none">
-    <table style="border-collapse:collapse;font-size:7pt;width:100%">
+  // Color legend + counts
+  h += `<td style="width:42%;vertical-align:top;border:none">
+    <table style="border-collapse:collapse;width:100%">
       <tr>
-        <td style="border:.5pt solid #999;padding:1pt 3pt">
-          <span style="display:inline-block;width:10pt;height:10pt;background:${C.lifted};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> L = Lifted
-        </td>
-        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.lifted}</td>
-      </tr>
-      <tr>
-        <td style="border:.5pt solid #999;padding:1pt 3pt">
-          <span style="display:inline-block;width:10pt;height:10pt;background:${C.replaced};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> R = Replaced
-        </td>
-        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.replaced}</td>
-      </tr>
-      <tr>
-        <td style="border:.5pt solid #999;padding:1pt 3pt">
-          <span style="display:inline-block;width:10pt;height:10pt;background:${C.dogleg};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> DF = Dogleg Fixed
-        </td>
-        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.dogleg}</td>
-      </tr>
-      <tr>
-        <td style="border:.5pt solid #999;padding:1pt 3pt">
-          <span style="display:inline-block;width:10pt;height:10pt;background:${C.catfill};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> CF = Cat. Filled
-        </td>
-        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.catfill}</td>
-      </tr>
-      <tr>
-        <td style="border:.5pt solid #999;padding:1pt 3pt">
-          <span style="display:inline-block;width:10pt;height:10pt;background:${C.bowed};border:.5pt solid #999;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span> B = Bowed Up
-        </td>
-        <td style="border:.5pt solid #999;padding:1pt 3pt;font-weight:bold">${t.bowed}</td>
-      </tr>
-    </table>
-  </td>`;
+        <th style="border:.5pt solid #888;padding:2pt 4pt;background:#D6E4F7">Symbol</th>
+        <th style="border:.5pt solid #888;padding:2pt 4pt;background:#D6E4F7">Meaning</th>
+        <th style="border:.5pt solid #888;padding:2pt 4pt;background:#D6E4F7">Count</th>
+      </tr>`;
+  [
+    ['lifted',  'L',   'Lifted'],
+    ['replaced','R',   'Replaced (Airpliced)'],
+    ['dogleg',  'DF',  'Dogleg Fixed'],
+    ['catfill', 'CF',  'Cat. Filled'],
+    ['bowed',   'RD',  'Bowed Up'],
+    ['dt',      'FSO', 'Tube & Dogleg Repl.'],
+  ].forEach(([state, code2, label]) => {
+    const count = tot[state] || 0;
+    h += `<tr>
+      <td style="border:.5pt solid #888;padding:2pt 4pt;text-align:center">
+        <span class="leg-dot" style="background:${BG[state]}"></span>${code2}
+      </td>
+      <td style="border:.5pt solid #888;padding:2pt 4pt">${label}</td>
+      <td style="border:.5pt solid #888;padding:2pt 4pt;text-align:right;font-weight:bold">${count}</td>
+    </tr>`;
+  });
+  h += `</table></td></tr></table>`;
 
-  h+=`</tr></table>`;
-
-  // Previous shift table if history exists
+  // Shift history
   if(history.length){
-    h+=`<table style="margin-top:4pt;border-collapse:collapse;font-size:7pt">
-      <tr><th colspan="6" class="ps-prog-hdr" style="padding:2pt 4pt;border:.5pt solid #999">Previous Shifts</th></tr>
+    h += `<table style="border-collapse:collapse;margin-top:5pt;font-size:7pt">
       <tr>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">Shift</th>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">Lifted</th>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">Replaced</th>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">Dogleg</th>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">CF</th>
-        <th style="border:.5pt solid #999;padding:1pt 4pt">Bowed</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Shift</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Lifted</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Replaced</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Dogleg</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Cat.Filled</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">Bowed</th>
+        <th style="border:.5pt solid #888;padding:2pt 5pt;background:#D6E4F7">D&T</th>
       </tr>`;
     history.forEach(sh=>{
       const s=sh.stats.total;
-      h+=`<tr>
-        <td style="border:.5pt solid #999;padding:1pt 4pt">${sh.name}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.lifted}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.replaced}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.dogleg}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.catfill}</td>
-        <td style="border:.5pt solid #999;padding:1pt 4pt;text-align:right">${s.bowed}</td>
+      h += `<tr>
+        <td style="border:.5pt solid #888;padding:2pt 5pt">${sh.name}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.lifted}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.replaced}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.dogleg}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.catfill}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.bowed}</td>
+        <td style="border:.5pt solid #888;padding:2pt 5pt;text-align:right">${s.dt}</td>
       </tr>`;
     });
-    h+=`</table>`;
+    h += `</table>`;
   }
 
-  // Notes removed from print as requested
+  h += `<div style="margin-top:4pt;font-size:6pt;color:#888;text-align:right">
+    Shift: ${shiftName} &nbsp;|&nbsp; Printed: ${new Date().toLocaleString()}
+  </div>`;
 
-  h+=`</div>`; // ps-wrap
+  h += `</body></html>`;
 
-  document.getElementById('print-sheet').innerHTML=h;
+  document.getElementById('print-sheet').innerHTML = h;
 }
 
-
-// ── TOAST ──
 function showToast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.background=type==='err'?'#7f1d1d':'#1d4ed8';
